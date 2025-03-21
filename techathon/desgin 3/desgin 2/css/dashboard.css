@@ -1,0 +1,237 @@
+.dashboard {
+    padding: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.dashboard .heading {
+    margin-bottom: 2rem;
+    text-align: center;
+    font-size: 2rem;
+    color: var(--black);
+}
+
+.dashboard .box-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.dashboard .box {
+    background: var(--white);
+    border-radius: 0.5rem;
+    padding: 1.5rem;
+    box-shadow: var(--box-shadow);
+}
+
+.dashboard .box h3 {
+    font-size: 1.2rem;
+    color: var(--black);
+    margin-bottom: 1rem;
+}
+
+.dashboard .box p {
+    font-size: 1rem;
+    color: var(--light-color);
+    line-height: 1.5;
+}
+
+.dashboard .tutor {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.dashboard .tutor img {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-right: 1rem;
+}
+
+.dashboard .tutor h3 {
+    font-size: 1rem;
+    color: var(--black);
+    margin-bottom: 0.5rem;
+}
+
+.dashboard .tutor span {
+    font-size: 0.8rem;
+    color: var(--light-color);
+}
+
+.dashboard .status {
+    margin-top: 1rem;
+}
+
+.dashboard .status p {
+    padding: 0.5rem 1rem;
+    border-radius: 2rem;
+    display: inline-block;
+    font-size: 0.8rem;
+}
+
+.dashboard .status .active {
+    background-color: var(--tertiary-color);
+    color: var(--white);
+}
+
+.dashboard .subjects {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.dashboard .subject-tag {
+    background-color: var(--quaternary-color);
+    color: var(--main-color);
+    padding: 0.3rem 0.8rem;
+    border-radius: 2rem;
+    font-size: 0.8rem;
+    display: inline-block;
+}
+
+.dashboard .availability {
+    margin-top: 1rem;
+}
+
+.dashboard .availability-slot {
+    background-color: var(--light-bg);
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    margin-bottom: 0.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.dashboard .availability-slot .day {
+    font-weight: bold;
+    color: var(--secondary-color);
+}
+
+.dashboard .availability-slot .time {
+    color: var(--light-color);
+}
+
+.dashboard .upcoming-sessions,
+.dashboard .recent-reviews {
+    margin-top: 2rem;
+}
+
+.dashboard .upcoming-sessions p,
+.dashboard .recent-reviews p {
+    font-size: 1rem;
+    color: var(--light-color);
+    margin-bottom: 1rem;
+}
+
+.dashboard .session-item {
+    border-left: 2px solid var(--main-color);
+    padding-left: 1rem;
+    margin-bottom: 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.dashboard .session-info h4 {
+    font-size: 1rem;
+    color: var(--black);
+}
+
+.dashboard .session-info p {
+    font-size: 0.8rem;
+    color: var(--light-color);
+    margin: 0.3rem 0;
+}
+
+.dashboard .session-status {
+    padding: 0.3rem 0.8rem;
+    border-radius: 2rem;
+    font-size: 0.7rem;
+    text-align: center;
+}
+
+.dashboard .status-scheduled {
+    background-color: var(--quaternary-color);
+    color: var(--main-color);
+}
+
+.dashboard .status-completed {
+    background-color: var(--tertiary-color);
+    color: var(--white);
+}
+
+.dashboard .status-cancelled {
+    background-color: var(--red);
+    color: var(--white);
+}
+
+.dashboard .review-item {
+    border-bottom: 1px solid var(--light-bg);
+    padding-bottom: 1rem;
+    margin-bottom: 1rem;
+}
+
+.dashboard .review-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+.dashboard .student-name {
+    font-weight: bold;
+    color: var(--secondary-color);
+}
+
+.dashboard .rating {
+    color: var(--orange);
+}
+
+.dashboard .review-comment {
+    font-size: 0.9rem;
+    color: var(--light-color);
+    line-height: 1.5;
+}
+
+.dashboard .review-date {
+    font-size: 0.7rem;
+    color: var(--light-color);
+    text-align: right;
+    margin-top: 0.5rem;
+}
+
+.dashboard .no-data {
+    text-align: center;
+    padding: 2rem;
+    background-color: var(--light-bg);
+    border-radius: 0.5rem;
+    color: var(--secondary-color);
+    font-size: 1rem;
+    margin-top: 1rem;
+}
+
+.dashboard .no-data i {
+    font-size: 2rem;
+    color: var(--secondary-color);
+    margin-bottom: 1rem;
+}
+
+@media (max-width: 768px) {
+    .dashboard {
+        padding: 1rem;
+    }
+
+    .dashboard .box-container {
+        grid-template-columns: 1fr;
+    }
+
+    .dashboard .tutor {
+        flex-direction: column;
+        text-align: center;
+    }
+} 

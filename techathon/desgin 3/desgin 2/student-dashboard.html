@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Dashboard - Learning Platform</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/dashboard.css">
+    <style>
+        .dashboard-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .welcome-section {
+            background: linear-gradient(135deg, #3B5249 0%, #2D3A3A 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+
+        .stat-card h3 {
+            color: #555;
+            margin-bottom: 10px;
+        }
+
+        .stat-card .value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #2D3A3A;
+        }
+
+        .section-container {
+            margin-bottom: 40px;
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .course-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .course-card {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .course-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+
+        .course-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .course-content {
+            padding: 20px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #eee;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--tertiary-color);
+            border-radius: 4px;
+            transition: width 0.3s ease;
+        }
+
+        .section-title {
+            margin-bottom: 20px;
+            color: #333;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 10px;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            background: var(--secondary-color);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: background 0.3s ease;
+            margin-top: 10px;
+        }
+
+        .btn:hover {
+            background: var(--tertiary-color);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--secondary-color);
+            color: var(--secondary-color);
+        }
+
+        .btn-outline:hover {
+            background: var(--accent-color);
+        }
+
+        .course-info {
+            margin: 8px 0;
+            color: #666;
+            font-size: 14px;
+        }
+
+        .course-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .loading-spinner {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 200px;
+        }
+
+        .loading-spinner i {
+            font-size: 2rem;
+            color: #000DFF;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .no-courses {
+            text-align: center;
+            padding: 40px 0;
+            color: #666;
+        }
+
+        .no-courses i {
+            font-size: 3rem;
+            color: #ccc;
+            margin-bottom: 15px;
+        }
+
+        @media (max-width: 768px) {
+            .course-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        /* Dark mode specific styles */
+        body.dark .dashboard-container {
+            color: #fff;
+        }
+
+        body.dark .stat-card {
+            background: #3B5249;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+        }
+
+        body.dark .section-container {
+            background: #3B5249;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+        }
+
+        body.dark .no-courses {
+            background: #3B5249;
+            color: #A4B494;
+        }
+
+        body.dark .course-card {
+            background: #344E41;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+        }
+
+        body.dark .course-content {
+            color: #fff;
+        }
+
+        body.dark .course-info {
+            color: #A4B494;
+        }
+
+        body.dark .section-title {
+            border-bottom: 2px solid #557B83;
+            color: #fff;
+        }
+
+        body.dark .loading-spinner i {
+            color: #557B83;
+        }
+    </style>
+</head>
+<body>
+    <!-- Dark Mode Toggle Button -->
+    <div id="dark-mode-floating-toggle" style="position: fixed; bottom: 20px; right: 20px; z-index: 9999; background: #3B5249; color: white; width: 50px; height: 50px; border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.2);">
+        <i class="fas fa-moon" style="font-size: 20px;"></i>
+    </div>
+
+    <header class="header">
+        <section class="flex">
+            <a href="home.html" class="logo">विद्या</a>
+            <form action="search.html" method="post" class="search-form">
+                <input type="text" name="search_box" required placeholder="search courses..." maxlength="100">
+                <button type="submit" class="fas fa-search"></button>
+            </form>
+            <div class="icons">
+                <div id="menu-btn" class="fas fa-bars"></div>
+                <div id="search-btn" class="fas fa-search"></div>
+                <div id="user-btn" class="fas fa-user"></div>
+                <div id="toggle-btn" class="fas fa-sun"></div>
+                <div id="header-logout-btn" class="fas fa-sign-out-alt" style="cursor: pointer; margin-left: 15px;" title="Logout"></div>
+            </div>
+            <div class="profile">
+                <img src="images/pic-1.jpg" class="image" alt="">
+                <h3 class="name" id="headerUserName">Loading...</h3>
+                <p class="role" id="headerUserRole">Student</p>
+                <div class="flex-btn">
+                    <a href="profile.html" class="option-btn">view profile</a>
+                    <a href="#" id="headerLogoutLink" class="option-btn">logout</a>
+                </div>
+            </div>
+        </section>
+    </header>
+
+    <div class="side-bar">
+        <div id="close-btn">
+            <i class="fas fa-times"></i>
+        </div>
+        <div class="profile">
+            <img src="images/pic-1.jpg" class="image" alt="">
+            <h3 class="name" id="sidebarUserName">Loading...</h3>
+            <p class="role" id="sidebarUserRole">Student</p>
+            <a href="profile.html" class="btn">view profile</a>
+        </div>
+        <nav class="navbar">
+            <a href="home.html"><i class="fas fa-home"></i><span>Home</span></a>
+            <a href="student-dashboard.html" class="active"><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></a>
+            <a href="courses.html"><i class="fas fa-graduation-cap"></i><span>All Courses</span></a>
+            <a href="my-courses.html"><i class="fas fa-book"></i><span>My Courses</span></a>
+            <a href="student-progress.html"><i class="fas fa-chart-line"></i><span>My Progress</span></a>
+            <a href="teachers.html"><i class="fas fa-chalkboard-teacher"></i><span>Teachers</span></a>
+            <a href="student-schedule.html"><i class="fas fa-calendar"></i><span>My Schedule</span></a>
+            <a href="student-messages.html"><i class="fas fa-envelope"></i><span>Messages</span></a>
+            <a href="student-assignments.html"><i class="fas fa-tasks"></i><span>Assignments</span></a>
+            <a href="student-settings.html"><i class="fas fa-cog"></i><span>Settings</span></a>
+            <a href="about.html"><i class="fas fa-info-circle"></i><span>About</span></a>
+            <a href="contact.html"><i class="fas fa-phone"></i><span>Contact</span></a>
+            <a href="#" id="sidebarLogoutLink"><i class="fas fa-sign-out-alt"></i><span>Logout</span></a>
+        </nav>
+    </div>
+
+    <div class="dashboard-container">
+        <div class="welcome-section">
+            <h1>Welcome back, <span id="studentName">Student</span>!</h1>
+            <p>Continue your learning journey</p>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <h3>Enrolled Courses</h3>
+                <div class="value" id="enrolledCourses">0</div>
+            </div>
+            <div class="stat-card">
+                <h3>Completed Courses</h3>
+                <div class="value" id="completedCourses">0</div>
+            </div>
+            <div class="stat-card">
+                <h3>Total Hours Learned</h3>
+                <div class="value" id="totalHours">0</div>
+            </div>
+            <div class="stat-card">
+                <h3>Average Progress</h3>
+                <div class="value" id="averageProgress">0%</div>
+            </div>
+        </div>
+
+        <section class="section-container continue-learning">
+            <h2 class="section-title">Continue Learning</h2>
+            <div id="continueLoading" class="loading-spinner">
+                <i class="fas fa-spinner fa-pulse"></i>
+            </div>
+            <div id="noContinue" class="no-courses" style="display: none;">
+                <i class="fas fa-book-open"></i>
+                <h3>No courses in progress</h3>
+                <p>Browse our courses and start learning today!</p>
+                <a href="courses.html" class="btn">Browse Courses</a>
+            </div>
+            <div class="course-grid" id="inProgressCourses">
+                <!-- Course cards will be dynamically added here -->
+            </div>
+        </section>
+
+        <section class="section-container latest-courses">
+            <h2 class="section-title">Recommended Courses</h2>
+            <div id="recommendedLoading" class="loading-spinner">
+                <i class="fas fa-spinner fa-pulse"></i>
+            </div>
+            <div id="noRecommended" class="no-courses" style="display: none;">
+                <i class="fas fa-search"></i>
+                <h3>No recommended courses yet</h3>
+                <p>As you learn, we'll recommend more courses for you</p>
+                <a href="courses.html" class="btn">Browse All Courses</a>
+            </div>
+            <div class="course-grid" id="recommendedCourses">
+                <!-- Latest course cards will be dynamically added here -->
+            </div>
+        </section>
+    </div>
+
+    <script src="js/script.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            try {
+                const token = localStorage.getItem('token');
+                if (!token) {
+                    window.location.href = 'login.html';
+                    return;
+                }
+
+                // Fetch user profile
+                console.log('Fetching profile...');
+                const profileResponse = await fetch('http://localhost:5001/api/user/profile', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                console.log('Profile response status:', profileResponse.status);
+                
+                if (!profileResponse.ok) {
+                    const errorData = await profileResponse.json();
+                    console.error('Profile error:', errorData);
+                    throw new Error(errorData.message || 'Failed to fetch profile');
+                }
+
+                const profileData = await profileResponse.json();
+                console.log('Profile data:', profileData);
+                const user = profileData.user;
+
+                // Update profile information in both header and sidebar
+                document.getElementById('headerUserName').textContent = user.name;
+                document.getElementById('sidebarUserName').textContent = user.name;
+                document.getElementById('studentName').textContent = user.name;
+
+                document.getElementById('headerUserRole').textContent = user.role.charAt(0).toUpperCase() + user.role.slice(1);
+                document.getElementById('sidebarUserRole').textContent = user.role.charAt(0).toUpperCase() + user.role.slice(1);
+
+                // Fetch student dashboard data
+                console.log('Fetching dashboard data...');
+                const dashboardResponse = await fetch('http://localhost:5001/api/student/dashboard', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                console.log('Dashboard response status:', dashboardResponse.status);
+                
+                if (!dashboardResponse.ok) {
+                    const errorData = await dashboardResponse.json();
+                    console.error('Dashboard error:', errorData);
+                    throw new Error('Failed to fetch dashboard data');
+                }
+
+                const dashboardData = await dashboardResponse.json();
+                console.log('Dashboard data:', dashboardData);
+
+                // Update statistics
+                document.getElementById('enrolledCourses').textContent = dashboardData.enrolledCourses || 0;
+                document.getElementById('completedCourses').textContent = dashboardData.completedCourses || 0;
+                document.getElementById('totalHours').textContent = dashboardData.totalHours || 0;
+                document.getElementById('averageProgress').textContent = `${dashboardData.averageProgress || 0}%`;
+
+                // Hide loading spinners
+                document.getElementById('continueLoading').style.display = 'none';
+                document.getElementById('recommendedLoading').style.display = 'none';
+
+                // Render in-progress courses
+                const inProgressContainer = document.getElementById('inProgressCourses');
+                if (dashboardData.inProgressCourses && dashboardData.inProgressCourses.length > 0) {
+                    inProgressContainer.innerHTML = dashboardData.inProgressCourses.map(course => `
+                        <div class="course-card">
+                            <img src="${course.image || 'https://placehold.co/300x200/6B73FF/FFFFFF?text=Course+Image'}" alt="${course.title}" class="course-image">
+                            <div class="course-content">
+                                <h3>${course.title}</h3>
+                                <p class="course-info"><i class="fas fa-book"></i> ${course.subject} • <i class="fas fa-layer-group"></i> ${course.level}</p>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: ${course.progress}%"></div>
+                                </div>
+                                <p><strong>Progress: ${course.progress}%</strong></p>
+                                <div class="course-actions">
+                                    <a href="course-view.html?id=${course._id}" class="btn">Continue Learning</a>
+                                    <a href="course-detail.html?id=${course._id}" class="btn btn-outline">Course Details</a>
+                                </div>
+                            </div>
+                        </div>
+                    `).join('');
+                } else {
+                    document.getElementById('noContinue').style.display = 'block';
+                }
+
+                // Render recommended courses
+                const recommendedContainer = document.getElementById('recommendedCourses');
+                if (dashboardData.recommendedCourses && dashboardData.recommendedCourses.length > 0) {
+                    recommendedContainer.innerHTML = dashboardData.recommendedCourses.map(course => `
+                        <div class="course-card">
+                            <img src="${course.image || 'https://placehold.co/300x200/6B73FF/FFFFFF?text=Course+Image'}" alt="${course.title}" class="course-image">
+                            <div class="course-content">
+                                <h3>${course.title}</h3>
+                                <p class="course-info"><i class="fas fa-book"></i> ${course.subject} • <i class="fas fa-layer-group"></i> ${course.level}</p>
+                                <p class="course-info"><i class="fas fa-clock"></i> ${course.duration} hours • <i class="fas fa-tag"></i> $${course.price}</p>
+                                <div class="course-actions">
+                                    <a href="course-detail.html?id=${course._id}" class="btn">View Details</a>
+                                </div>
+                            </div>
+                        </div>
+                    `).join('');
+                } else {
+                    // Check if we have latestCourses as fallback
+                    if (dashboardData.latestCourses && dashboardData.latestCourses.length > 0) {
+                        document.querySelector('.latest-courses .section-title').textContent = 'Latest Courses';
+                        recommendedContainer.innerHTML = dashboardData.latestCourses.map(course => `
+                            <div class="course-card">
+                                <img src="${course.image || 'https://placehold.co/300x200/6B73FF/FFFFFF?text=Course+Image'}" alt="${course.title}" class="course-image">
+                                <div class="course-content">
+                                    <h3>${course.title}</h3>
+                                    <p class="course-info"><i class="fas fa-book"></i> ${course.subject} • <i class="fas fa-layer-group"></i> ${course.level}</p>
+                                    <p class="course-info"><i class="fas fa-clock"></i> ${course.duration} hours • <i class="fas fa-tag"></i> $${course.price}</p>
+                                    <div class="course-actions">
+                                        <a href="course-detail.html?id=${course._id}" class="btn">View Details</a>
+                                    </div>
+                                </div>
+                            </div>
+                        `).join('');
+                    } else {
+                        document.getElementById('noRecommended').style.display = 'block';
+                    }
+                }
+
+                // Setup logout buttons
+                document.getElementById('headerLogoutLink').addEventListener('click', handleLogout);
+                document.getElementById('sidebarLogoutLink').addEventListener('click', handleLogout);
+                document.getElementById('header-logout-btn').addEventListener('click', handleLogout);
+                
+            } catch (error) {
+                console.error('Error loading dashboard:', error);
+                
+                // Hide loading spinners
+                document.getElementById('continueLoading').style.display = 'none';
+                document.getElementById('recommendedLoading').style.display = 'none';
+                
+                // Show user-friendly error messages instead of alerts
+                const continueSection = document.querySelector('.continue-learning');
+                const recommendedSection = document.querySelector('.latest-courses');
+                
+                // Create error message for continue learning section
+                const continueError = document.createElement('div');
+                continueError.className = 'no-courses';
+                continueError.style.background = 'var(--accent-color)';
+                continueError.style.color = 'var(--secondary-color)';
+                continueError.style.borderLeft = '4px solid var(--secondary-color)';
+                continueError.innerHTML = `
+                    <i class="fas fa-exclamation-circle"></i>
+                    <h3>Error Loading Your Courses</h3>
+                    <p>There was a problem loading your course information.</p>
+                    <button onclick="window.location.reload()" class="btn" style="background: var(--secondary-color); margin-top: 1rem;">
+                        <i class="fas fa-sync"></i> Refresh
+                    </button>
+                `;
+                
+                // Create error message for recommended section
+                const recommendedError = document.createElement('div');
+                recommendedError.className = 'no-courses';
+                recommendedError.style.background = 'var(--accent-color)';
+                recommendedError.style.color = 'var(--secondary-color)';
+                recommendedError.style.borderLeft = '4px solid var(--secondary-color)';
+                recommendedError.innerHTML = `
+                    <i class="fas fa-exclamation-circle"></i>
+                    <h3>Error Loading Recommendations</h3>
+                    <p>There was a problem loading course recommendations.</p>
+                    <a href="browse-courses.html" class="btn" style="background: var(--secondary-color); margin-top: 1rem;">
+                        <i class="fas fa-search"></i> Browse Courses
+                    </a>
+                `;
+                
+                // Clear and append error messages
+                continueSection.querySelector('#continueLoading').style.display = 'none';
+                recommendedSection.querySelector('#recommendedLoading').style.display = 'none';
+                
+                continueSection.querySelector('#inProgressCourses').innerHTML = '';
+                recommendedSection.querySelector('#recommendedCourses').innerHTML = '';
+                
+                continueSection.appendChild(continueError);
+                recommendedSection.appendChild(recommendedError);
+            }
+        });
+        
+        // Handle logout function
+        function handleLogout(e) {
+            e.preventDefault();
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            window.location.href = 'login.html';
+        }
+
+        // Dark Mode Manual Toggle
+        document.getElementById('dark-mode-floating-toggle').addEventListener('click', function() {
+            // Toggle dark mode class
+            document.body.classList.toggle('dark');
+            
+            // Update button icon
+            const icon = this.querySelector('i');
+            if (document.body.classList.contains('dark')) {
+                localStorage.setItem('darkMode', 'enabled');
+                icon.classList.remove('fa-moon');
+                icon.classList.add('fa-sun');
+            } else {
+                localStorage.setItem('darkMode', 'disabled');
+                icon.classList.remove('fa-sun');
+                icon.classList.add('fa-moon');
+            }
+            
+            // Update the regular toggle button as well
+            const headerToggleBtn = document.getElementById('toggle-btn');
+            if (headerToggleBtn) {
+                if (document.body.classList.contains('dark')) {
+                    headerToggleBtn.classList.remove('fa-moon');
+                    headerToggleBtn.classList.add('fa-sun');
+                } else {
+                    headerToggleBtn.classList.remove('fa-sun');
+                    headerToggleBtn.classList.add('fa-moon');
+                }
+            }
+        });
+        
+        // Initialize button state based on current mode
+        document.addEventListener('DOMContentLoaded', function() {
+            const darkModeEnabled = document.body.classList.contains('dark');
+            const icon = document.getElementById('dark-mode-floating-toggle').querySelector('i');
+            
+            if (darkModeEnabled) {
+                icon.classList.remove('fa-moon');
+                icon.classList.add('fa-sun');
+            } else {
+                icon.classList.remove('fa-sun');
+                icon.classList.add('fa-moon');
+            }
+        });
+    </script>
+</body>
+</html> 

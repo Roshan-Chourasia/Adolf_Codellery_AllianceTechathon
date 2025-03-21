@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>S3 Upload Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .container {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        h1, h2 {
+            color: #333;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input[type="file"], 
+        input[type="text"], 
+        button {
+            padding: 10px;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+        .progress-container {
+            width: 100%;
+            height: 20px;
+            background-color: #f3f3f3;
+            border-radius: 4px;
+            margin: 10px 0;
+            overflow: hidden;
+        }
+        .progress-bar {
+            height: 100%;
+            background-color: #4CAF50;
+            width: 0%;
+            text-align: center;
+            line-height: 20px;
+            color: white;
+            transition: width 0.3s;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #f9f9f9;
+            border-radius: 4px;
+            border-left: 4px solid #4CAF50;
+        }
+        .error {
+            background-color: #fff0f0;
+            border-left-color: #f44336;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+        }
+        .steps {
+            background-color: #f5f5f5;
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+        .steps ol {
+            margin: 0;
+            padding-left: 20px;
+        }
+        .steps li {
+            margin-bottom: 8px;
+        }
+        .log {
+            background-color: #f5f5f5;
+            padding: 10px;
+            border-radius: 4px;
+            height: 200px;
+            overflow-y: auto;
+            margin-top: 20px;
+            font-family: monospace;
+            font-size: 14px;
+        }
+        .log-entry {
+            margin: 5px 0;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 5px;
+        }
+        .log-time {
+            color: #666;
+            margin-right: 8px;
+        }
+        .log-info {
+            color: #2196F3;
+        }
+        .log-error {
+            color: #f44336;
+        }
+        .log-success {
+            color: #4CAF50;
+        }
+    </style>
+</head>
+<body>
+    <h1>S3 Upload Test</h1>
+
+    <div class="steps">
+        <h3>How to Test S3 Uploads</h3>
+        <ol>
+            <li>First, test the connection by clicking "Test S3 Connection"</li>
+            <li>Select a video file using the file input below</li>
+            <li>Click "Get Presigned URL" to request an upload URL from the server</li>
+            <li>Once you have the URL, click "Upload to S3" to test direct upload</li>
+        </ol>
+    </div>
+
+    <div class="container">
+        <h2>Step 1: Test Connection</h2>
+        <button id="testConnectionBtn">Test S3 Connection</button>
+        <div id="connectionResult" class="result" style="display: none;"></div>
+    </div>
+
+    <div class="container">
+        <h2>Step 2: Select Video File</h2>
+        <div class="form-group">
+            <label for="videoFile">Select a video file:</label>
+            <input type="file" id="videoFile" accept="video/*">
+        </div>
+        <div id="fileInfo"></div>
+    </div>
+
+    <div class="container">
+        <h2>Step 3: Get Presigned URL</h2>
+        <div class="form-group">
+            <label for="lessonTitle">Lesson Title:</label>
+            <input type="text" id="lessonTitle" placeholder="Enter lesson title">
+        </div>
+        <div class="form-group">
+            <label for="courseId">Course ID:</label>
+            <input type="text" id="courseId" placeholder="Enter course ID">
+        </div>
+        <button id="getUrlBtn">Get Presigned URL</button>
+        <div id="urlResult" class="result" style="display: none;"></div>
+    </div>
+
+    <div class="container">
+        <h2>Step 4: Upload to S3</h2>
+        <button id="uploadBtn" disabled>Upload to S3</button>
+        <div class="progress-container" style="display: none;">
+            <div class="progress-bar" id="uploadProgress">0%</div>
+        </div>
+        <div id="uploadResult" class="result" style="display: none;"></div>
+    </div>
+
+    <div class="log" id="logContainer">
+        <div class="log-entry">
+            <span class="log-time">[00:00:00]</span>
+            <span class="log-info">S3 Upload Test initialized</span>
+        </div>
+    </div>
+
+    <script>
+        // Globals
+        let uploadUrl = '';
+        let videoUrl = '';
+        let materialData = null;
+        let token = localStorage.getItem('token');
+        const API_URL = 'http://localhost:5001/api';
+
+        // DOM elements
+        const testConnectionBtn = document.getElementById('testConnectionBtn');
+        const getUrlBtn = document.getElementById('getUrlBtn');
+        const uploadBtn = document.getElementById('uploadBtn');
+        const videoFileInput = document.getElementById('videoFile');
+        const lessonTitleInput = document.getElementById('lessonTitle');
+        const courseIdInput = document.getElementById('courseId');
+        const connectionResult = document.getElementById('connectionResult');
+        const urlResult = document.getElementById('urlResult');
+        const uploadResult = document.getElementById('uploadResult');
+        const uploadProgress = document.getElementById('uploadProgress');
+        const fileInfo = document.getElementById('fileInfo');
+        const logContainer = document.getElementById('logContainer');
+
+        // Logging utility
+        function log(message, type = 'info') {
+            const now = new Date();
+            const time = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}:${now.getSeconds().toString().padStart(2, '0')}`;
+            
+            const logEntry = document.createElement('div');
+            logEntry.className = 'log-entry';
+            logEntry.innerHTML = `
+                <span class="log-time">[${time}]</span>
+                <span class="log-${type}">${message}</span>
+            `;
+            logContainer.appendChild(logEntry);
+            logContainer.scrollTop = logContainer.scrollHeight;
+        }
+
+        // Handle file selection
+        videoFileInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                fileInfo.innerHTML = `
+                    <p><strong>File:</strong> ${file.name}</p>
+                    <p><strong>Size:</strong> ${formatFileSize(file.size)}</p>
+                    <p><strong>Type:</strong> ${file.type}</p>
+                `;
+                log(`File selected: ${file.name} (${formatFileSize(file.size)})`, 'info');
+            } else {
+                fileInfo.innerHTML = '';
+            }
+        });
+
+        // Format file size
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+
+        // Test connection
+        testConnectionBtn.addEventListener('click', async () => {
+            try {
+                log('Testing S3 connection...', 'info');
+                testConnectionBtn.disabled = true;
+                connectionResult.style.display = 'none';
+
+                const response = await fetch(`${API_URL}/uploads/test-s3`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                const data = await response.json();
+                
+                if (response.ok) {
+                    connectionResult.style.display = 'block';
+                    connectionResult.textContent = 'Connection successful! S3 is configured correctly.';
+                    connectionResult.className = 'result';
+                    log('S3 connection test successful', 'success');
+                } else {
+                    connectionResult.style.display = 'block';
+                    connectionResult.textContent = `Connection failed: ${data.message || 'Unknown error'}`;
+                    connectionResult.className = 'result error';
+                    log(`S3 connection test failed: ${data.message || 'Unknown error'}`, 'error');
+                }
+            } catch (error) {
+                connectionResult.style.display = 'block';
+                connectionResult.textContent = `Error: ${error.message}`;
+                connectionResult.className = 'result error';
+                log(`Error testing connection: ${error.message}`, 'error');
+            } finally {
+                testConnectionBtn.disabled = false;
+            }
+        });
+
+        // Get presigned URL
+        getUrlBtn.addEventListener('click', async () => {
+            try {
+                const file = videoFileInput.files[0];
+                const title = lessonTitleInput.value || 'Test Lesson';
+                const courseId = courseIdInput.value;
+
+                if (!file) {
+                    urlResult.style.display = 'block';
+                    urlResult.textContent = 'Please select a file first';
+                    urlResult.className = 'result error';
+                    log('Error: No file selected', 'error');
+                    return;
+                }
+
+                if (!courseId) {
+                    urlResult.style.display = 'block';
+                    urlResult.textContent = 'Please enter a course ID';
+                    urlResult.className = 'result error';
+                    log('Error: No course ID provided', 'error');
+                    return;
+                }
+
+                log(`Requesting presigned URL for ${file.name}...`, 'info');
+                getUrlBtn.disabled = true;
+                urlResult.style.display = 'none';
+
+                const response = await fetch(`${API_URL}/uploads/video-upload-url`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        fileName: file.name,
+                        fileType: file.type,
+                        courseId: courseId,
+                        lessonTitle: title,
+                        lessonDescription: 'Test upload description'
+                    })
+                });
+
+                const data = await response.json();
+                
+                if (response.ok && data.uploadUrl) {
+                    uploadUrl = data.uploadUrl;
+                    videoUrl = data.videoUrl;
+                    materialData = data.materialData;
+                    
+                    urlResult.style.display = 'block';
+                    urlResult.innerHTML = `
+                        <p><strong>Success!</strong> Presigned URL generated.</p>
+                        <p><strong>Upload URL:</strong> ${uploadUrl.substring(0, 50)}...</p>
+                        <p><strong>Video URL:</strong> ${videoUrl}</p>
+                    `;
+                    urlResult.className = 'result';
+                    uploadBtn.disabled = false;
+                    log('Successfully obtained presigned URL', 'success');
+                } else {
+                    urlResult.style.display = 'block';
+                    urlResult.textContent = `Error: ${data.message || 'Failed to get upload URL'}`;
+                    urlResult.className = 'result error';
+                    log(`Error getting presigned URL: ${data.message || 'Unknown error'}`, 'error');
+                }
+            } catch (error) {
+                urlResult.style.display = 'block';
+                urlResult.textContent = `Error: ${error.message}`;
+                urlResult.className = 'result error';
+                log(`Error requesting presigned URL: ${error.message}`, 'error');
+            } finally {
+                getUrlBtn.disabled = false;
+            }
+        });
+
+        // Upload to S3
+        uploadBtn.addEventListener('click', async () => {
+            try {
+                const file = videoFileInput.files[0];
+                
+                if (!file) {
+                    uploadResult.style.display = 'block';
+                    uploadResult.textContent = 'Please select a file first';
+                    uploadResult.className = 'result error';
+                    return;
+                }
+                
+                if (!uploadUrl) {
+                    uploadResult.style.display = 'block';
+                    uploadResult.textContent = 'Please get a presigned URL first';
+                    uploadResult.className = 'result error';
+                    return;
+                }
+                
+                log(`Starting upload to S3 for ${file.name}...`, 'info');
+                uploadBtn.disabled = true;
+                document.querySelector('.progress-container').style.display = 'block';
+                uploadResult.style.display = 'none';
+                
+                // Create XHR for the upload
+                const xhr = new XMLHttpRequest();
+                
+                // Track progress
+                xhr.upload.addEventListener('progress', (event) => {
+                    if (event.lengthComputable) {
+                        const percentComplete = Math.round((event.loaded / event.total) * 100);
+                        uploadProgress.style.width = `${percentComplete}%`;
+                        uploadProgress.textContent = `${percentComplete}%`;
+                        log(`Upload progress: ${percentComplete}%`, 'info');
+                    }
+                });
+                
+                // Handle completion
+                xhr.addEventListener('load', async () => {
+                    if (xhr.status >= 200 && xhr.status < 300) {
+                        log('S3 upload completed successfully!', 'success');
+                        
+                        // Now add to course materials
+                        try {
+                            log('Adding video to course materials...', 'info');
+                            
+                            const addResponse = await fetch(`${API_URL}/uploads/add-video-to-course`, {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'Authorization': `Bearer ${token}`
+                                },
+                                body: JSON.stringify({
+                                    courseId: courseIdInput.value,
+                                    materialData: materialData.materialData
+                                })
+                            });
+                            
+                            const addData = await addResponse.json();
+                            
+                            if (addResponse.ok) {
+                                uploadResult.style.display = 'block';
+                                uploadResult.innerHTML = `
+                                    <p><strong>Success!</strong> Video uploaded to S3 and added to course.</p>
+                                    <p><strong>Video URL:</strong> <a href="${videoUrl}" target="_blank">${videoUrl}</a></p>
+                                `;
+                                uploadResult.className = 'result';
+                                log('Video successfully added to course materials', 'success');
+                            } else {
+                                uploadResult.style.display = 'block';
+                                uploadResult.innerHTML = `
+                                    <p><strong>Partial success.</strong> Video uploaded to S3 but failed to add to course: ${addData.message}</p>
+                                    <p><strong>Video URL:</strong> <a href="${videoUrl}" target="_blank">${videoUrl}</a></p>
+                                `;
+                                uploadResult.className = 'result error';
+                                log(`Error adding to course: ${addData.message}`, 'error');
+                            }
+                        } catch (addError) {
+                            uploadResult.style.display = 'block';
+                            uploadResult.innerHTML = `
+                                <p><strong>Partial success.</strong> Video uploaded to S3 but failed to add to course: ${addError.message}</p>
+                                <p><strong>Video URL:</strong> <a href="${videoUrl}" target="_blank">${videoUrl}</a></p>
+                            `;
+                            uploadResult.className = 'result error';
+                            log(`Error adding to course: ${addError.message}`, 'error');
+                        }
+                    } else {
+                        uploadResult.style.display = 'block';
+                        uploadResult.textContent = `Upload failed with status ${xhr.status}: ${xhr.responseText || 'No error details available'}`;
+                        uploadResult.className = 'result error';
+                        log(`Upload failed with status ${xhr.status}`, 'error');
+                    }
+                });
+                
+                // Handle errors
+                xhr.addEventListener('error', () => {
+                    uploadResult.style.display = 'block';
+                    uploadResult.textContent = 'Network error during upload';
+                    uploadResult.className = 'result error';
+                    log('Network error during upload', 'error');
+                });
+                
+                xhr.addEventListener('abort', () => {
+                    uploadResult.style.display = 'block';
+                    uploadResult.textContent = 'Upload aborted';
+                    uploadResult.className = 'result error';
+                    log('Upload aborted', 'error');
+                });
+                
+                // Configure XHR
+                xhr.open('PUT', uploadUrl);
+                
+                // IMPORTANT: Set the Content-Type header to match what was specified when generating the signed URL
+                xhr.setRequestHeader('Content-Type', file.type);
+                
+                // Send the file
+                xhr.send(file);
+                
+            } catch (error) {
+                uploadResult.style.display = 'block';
+                uploadResult.textContent = `Error: ${error.message}`;
+                uploadResult.className = 'result error';
+                log(`Error during upload: ${error.message}`, 'error');
+                uploadBtn.disabled = false;
+            }
+        });
+
+        // Check for token on load
+        document.addEventListener('DOMContentLoaded', () => {
+            if (!token) {
+                document.body.innerHTML = `
+                    <div class="error">
+                        <h2>Authentication Required</h2>
+                        <p>You must be logged in to use this test page.</p>
+                        <p><a href="login.html">Click here to log in</a></p>
+                    </div>
+                `;
+            } else {
+                // Try to parse course ID from URL if present
+                const urlParams = new URLSearchParams(window.location.search);
+                const courseIdParam = urlParams.get('courseId');
+                if (courseIdParam) {
+                    courseIdInput.value = courseIdParam;
+                    log(`Course ID detected from URL: ${courseIdParam}`, 'info');
+                }
+            }
+        });
+    </script>
+</body>
+</html> 

@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Progress - Learning Platform</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/dashboard.css">
+    <style>
+        .progress-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .page-title {
+            margin-bottom: 30px;
+            color: #333;
+            text-align: center;
+        }
+
+        .progress-overview {
+            background: linear-gradient(135deg, #6B73FF 0%, #000DFF 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        .progress-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .stat-item {
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+        }
+
+        .stat-value {
+            font-size: 28px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .course-progress-list {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+
+        .course-progress-card {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .course-progress-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+
+        .course-header {
+            display: flex;
+            align-items: center;
+            padding: 20px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .course-image {
+            width: 80px;
+            height: 80px;
+            border-radius: 8px;
+            object-fit: cover;
+            margin-right: 20px;
+            flex-shrink: 0;
+        }
+
+        .course-title {
+            margin: 0 0 5px 0;
+            font-size: 18px;
+        }
+
+        .course-info {
+            color: #666;
+            font-size: 14px;
+            margin: 0;
+        }
+
+        .course-details {
+            padding: 20px;
+        }
+
+        .progress-bar-container {
+            margin-bottom: 15px;
+        }
+
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        .progress-bar {
+            height: 10px;
+            background: #eee;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: #000DFF;
+            border-radius: 5px;
+            transition: width 0.3s ease;
+        }
+
+        .lesson-list {
+            margin-top: 20px;
+        }
+
+        .lesson-list-title {
+            font-size: 16px;
+            margin-bottom: 10px;
+            padding-bottom: 5px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .lesson-item {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 5px;
+            transition: background 0.2s ease;
+        }
+
+        .lesson-item:hover {
+            background: #f5f5f5;
+        }
+
+        .lesson-status {
+            margin-right: 10px;
+            flex-shrink: 0;
+        }
+
+        .lesson-status.completed {
+            color: #4CAF50;
+        }
+
+        .lesson-status.pending {
+            color: #FFC107;
+        }
+
+        .lesson-title {
+            flex-grow: 1;
+        }
+
+        .lesson-duration {
+            color: #666;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+
+        .course-actions {
+            padding: 20px;
+            background: #f9f9f9;
+            border-top: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            background: #000DFF;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: background 0.3s ease;
+        }
+
+        .btn:hover {
+            background: #0009cc;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid #000DFF;
+            color: #000DFF;
+        }
+
+        .btn-outline:hover {
+            background: #f0f2ff;
+        }
+
+        .loading-spinner {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 200px;
+        }
+
+        .loading-spinner i {
+            font-size: 2rem;
+            color: #000DFF;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .no-courses {
+            text-align: center;
+            padding: 40px 0;
+            color: #666;
+        }
+
+        .no-courses i {
+            font-size: 3rem;
+            color: #ccc;
+            margin-bottom: 15px;
+        }
+
+        @media (max-width: 768px) {
+            .progress-stats {
+                grid-template-columns: 1fr 1fr;
+            }
+            
+            .course-header {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .course-image {
+                margin-right: 0;
+                margin-bottom: 15px;
+            }
+            
+            .course-actions {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .btn {
+                width: 100%;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <section class="flex">
+            <a href="home.html" class="logo">विद्या</a>
+            <form action="search.html" method="post" class="search-form">
+                <input type="text" name="search_box" required placeholder="search courses..." maxlength="100">
+                <button type="submit" class="fas fa-search"></button>
+            </form>
+            <div class="icons">
+                <div id="menu-btn" class="fas fa-bars"></div>
+                <div id="search-btn" class="fas fa-search"></div>
+                <div id="user-btn" class="fas fa-user"></div>
+                <div id="toggle-btn" class="fas fa-sun"></div>
+                <div id="header-logout-btn" class="fas fa-sign-out-alt" style="cursor: pointer; margin-left: 15px;" title="Logout"></div>
+            </div>
+            <div class="profile">
+                <img src="images/pic-1.jpg" class="image" alt="">
+                <h3 class="name" id="headerUserName">Loading...</h3>
+                <p class="role" id="headerUserRole">Student</p>
+                <div class="flex-btn">
+                    <a href="profile.html" class="option-btn">view profile</a>
+                    <a href="#" id="headerLogoutLink" class="option-btn">logout</a>
+                </div>
+            </div>
+        </section>
+    </header>
+
+    <div class="side-bar">
+        <div id="close-btn">
+            <i class="fas fa-times"></i>
+        </div>
+        <div class="profile">
+            <img src="images/pic-1.jpg" class="image" alt="">
+            <h3 class="name" id="sidebarUserName">Loading...</h3>
+            <p class="role" id="sidebarUserRole">Student</p>
+            <a href="profile.html" class="btn">view profile</a>
+        </div>
+        <nav class="navbar">
+            <a href="home.html"><i class="fas fa-home"></i><span>Home</span></a>
+            <a href="student-dashboard.html"><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></a>
+            <a href="courses.html"><i class="fas fa-graduation-cap"></i><span>All Courses</span></a>
+            <a href="my-courses.html"><i class="fas fa-book"></i><span>My Courses</span></a>
+            <a href="student-progress.html" class="active"><i class="fas fa-chart-line"></i><span>My Progress</span></a>
+            <a href="teachers.html"><i class="fas fa-chalkboard-teacher"></i><span>Teachers</span></a>
+            <a href="student-schedule.html"><i class="fas fa-calendar"></i><span>My Schedule</span></a>
+            <a href="student-messages.html"><i class="fas fa-envelope"></i><span>Messages</span></a>
+            <a href="student-assignments.html"><i class="fas fa-tasks"></i><span>Assignments</span></a>
+            <a href="student-settings.html"><i class="fas fa-cog"></i><span>Settings</span></a>
+            <a href="about.html"><i class="fas fa-info-circle"></i><span>About</span></a>
+            <a href="contact.html"><i class="fas fa-phone"></i><span>Contact</span></a>
+            <a href="#" id="sidebarLogoutLink"><i class="fas fa-sign-out-alt"></i><span>Logout</span></a>
+        </nav>
+    </div>
+
+    <div class="progress-container">
+        <h1 class="page-title">My Learning Progress</h1>
+
+        <div class="progress-overview">
+            <h2>Overall Progress</h2>
+            <div class="progress-stats">
+                <div class="stat-item">
+                    <div class="stat-value" id="enrolledCourses">0</div>
+                    <div class="stat-label">Enrolled Courses</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="completedCourses">0</div>
+                    <div class="stat-label">Completed Courses</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="totalHours">0</div>
+                    <div class="stat-label">Hours Learned</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="averageProgress">0%</div>
+                    <div class="stat-label">Average Progress</div>
+                </div>
+            </div>
+        </div>
+
+        <div id="loadingProgress" class="loading-spinner">
+            <i class="fas fa-spinner fa-pulse"></i>
+        </div>
+
+        <div id="noCoursesMessage" class="no-courses" style="display: none;">
+            <i class="fas fa-book"></i>
+            <h3>No courses enrolled yet</h3>
+            <p>Start your learning journey by enrolling in courses</p>
+            <a href="courses.html" class="btn">Browse Courses</a>
+        </div>
+
+        <div id="courseProgressList" class="course-progress-list">
+            <!-- Course progress cards will be added here dynamically -->
+        </div>
+    </div>
+
+    <script src="js/script.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            try {
+                const token = localStorage.getItem('token');
+                if (!token) {
+                    window.location.href = 'login.html';
+                    return;
+                }
+
+                // Fetch user profile
+                const profileResponse = await fetch('http://localhost:5001/api/user/profile', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                
+                if (!profileResponse.ok) {
+                    const errorData = await profileResponse.json();
+                    throw new Error(errorData.message || 'Failed to fetch profile');
+                }
+
+                const profileData = await profileResponse.json();
+                const user = profileData.user;
+
+                // Update profile information
+                document.getElementById('headerUserName').textContent = user.name;
+                document.getElementById('sidebarUserName').textContent = user.name;
+                document.getElementById('headerUserRole').textContent = user.role.charAt(0).toUpperCase() + user.role.slice(1);
+                document.getElementById('sidebarUserRole').textContent = user.role.charAt(0).toUpperCase() + user.role.slice(1);
+
+                // Fetch enrolled courses
+                const coursesResponse = await fetch('http://localhost:5001/api/student/courses', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (!coursesResponse.ok) {
+                    const errorData = await coursesResponse.json();
+                    throw new Error(errorData.message || 'Failed to fetch enrolled courses');
+                }
+
+                const enrolledCourses = await coursesResponse.json();
+
+                // Hide loading spinner
+                document.getElementById('loadingProgress').style.display = 'none';
+
+                // Check if any courses are enrolled
+                if (enrolledCourses.length === 0) {
+                    document.getElementById('noCoursesMessage').style.display = 'block';
+                    return;
+                }
+
+                // Fetch dashboard data for overall stats
+                const dashboardResponse = await fetch('http://localhost:5001/api/student/dashboard', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (dashboardResponse.ok) {
+                    const dashboardData = await dashboardResponse.json();
+                    
+                    // Update statistics
+                    document.getElementById('enrolledCourses').textContent = dashboardData.enrolledCourses || 0;
+                    document.getElementById('completedCourses').textContent = dashboardData.completedCourses || 0;
+                    document.getElementById('totalHours').textContent = dashboardData.totalHours || 0;
+                    document.getElementById('averageProgress').textContent = `${dashboardData.averageProgress || 0}%`;
+                }
+
+                // Render course progress
+                const courseProgressList = document.getElementById('courseProgressList');
+                courseProgressList.innerHTML = enrolledCourses.map(course => {
+                    // Find progress details for this course
+                    const progressRecord = course.studentProgress && course.studentProgress.find(
+                        record => record.studentId && record.studentId.toString() === user._id.toString()
+                    );
+                    
+                    const totalLessons = course.materials?.length || 0;
+                    const completedLessons = progressRecord?.completedLessons?.length || 0;
+                    const progressPercentage = totalLessons > 0 ? Math.round((completedLessons / totalLessons) * 100) : 0;
+                    
+                    // Generate lesson list HTML
+                    let lessonListHTML = '';
+                    if (course.materials && course.materials.length > 0) {
+                        lessonListHTML = course.materials.map((material, index) => {
+                            const isCompleted = progressRecord?.completedLessons?.includes(material._id);
+                            const statusIcon = isCompleted 
+                                ? '<i class="fas fa-check-circle completed"></i>' 
+                                : '<i class="fas fa-circle pending"></i>';
+                            
+                            return `
+                                <div class="lesson-item">
+                                    <div class="lesson-status ${isCompleted ? 'completed' : 'pending'}">${statusIcon}</div>
+                                    <div class="lesson-title">Lesson ${index + 1}: ${material.title}</div>
+                                    <div class="lesson-duration">${material.duration || 0} min</div>
+                                </div>
+                            `;
+                        }).join('');
+                    } else {
+                        lessonListHTML = '<p>No lessons available for this course yet.</p>';
+                    }
+
+                    return `
+                        <div class="course-progress-card">
+                            <div class="course-header">
+                                <img src="${course.image || 'https://placehold.co/300x200/6B73FF/FFFFFF?text=Course+Image'}" alt="${course.title}" class="course-image">
+                                <div>
+                                    <h3 class="course-title">${course.title}</h3>
+                                    <p class="course-info"><i class="fas fa-book"></i> ${course.subject} • <i class="fas fa-layer-group"></i> ${course.level}</p>
+                                    <p class="course-info"><i class="fas fa-clock"></i> ${course.duration || 0} hours</p>
+                                </div>
+                            </div>
+                            <div class="course-details">
+                                <div class="progress-bar-container">
+                                    <div class="progress-label">
+                                        <span>Progress</span>
+                                        <span>${progressPercentage}%</span>
+                                    </div>
+                                    <div class="progress-bar">
+                                        <div class="progress-fill" style="width: ${progressPercentage}%"></div>
+                                    </div>
+                                </div>
+                                <p><strong>${completedLessons}/${totalLessons}</strong> lessons completed</p>
+                                
+                                <div class="lesson-list">
+                                    <h4 class="lesson-list-title">Course Content</h4>
+                                    ${lessonListHTML}
+                                </div>
+                            </div>
+                            <div class="course-actions">
+                                <a href="course-view.html?id=${course._id}" class="btn">Continue Learning</a>
+                                <a href="course-detail.html?id=${course._id}" class="btn btn-outline">Course Details</a>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+
+                // Setup logout buttons
+                document.getElementById('headerLogoutLink').addEventListener('click', handleLogout);
+                document.getElementById('sidebarLogoutLink').addEventListener('click', handleLogout);
+                document.getElementById('header-logout-btn').addEventListener('click', handleLogout);
+                
+            } catch (error) {
+                console.error('Error loading progress data:', error);
+                alert('Failed to load progress data. Please try again later.');
+                
+                // Hide loading spinner and show error state
+                document.getElementById('loadingProgress').style.display = 'none';
+                document.getElementById('noCoursesMessage').style.display = 'block';
+                document.getElementById('noCoursesMessage').innerHTML = `                    <i class="fas fa-exclamation-triangle"></i>
+                    <h3>Error loading progress</h3>
+                    <p>${error.message || 'Something went wrong. Please try again later.'}</p>
+                    <a href="student-dashboard.html" class="btn">Back to Dashboard</a>
+                `;
+            }
+        });
+
+        // Handle logout function
+        function handleLogout(e) {
+            e.preventDefault();
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            window.location.href = 'login.html';
+        }
+    </script>
+</body>
+</html> 

@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+   <meta charset="UTF-8">
+   <meta http-equiv="X-UA-Compatible" content="IE=edge">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <title>home</title>
+
+   <!-- font awesome cdn link  -->
+   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.2/css/all.min.css">
+
+   <!-- custom css file link  -->
+   <link rel="stylesheet" href="css/style.css">
+
+   <style>
+       .confirmation-message {
+           position: fixed;
+           top: 0;
+           left: 0;
+           width: 100%;
+           height: 100%;
+           background-color: rgba(0, 0, 0, 0.7);
+           display: flex;
+           justify-content: center;
+           align-items: center;
+           z-index: 1000;
+       }
+       
+       .confirmation-inner {
+           background-color: #fff;
+           padding: 2rem;
+           border-radius: 0.5rem;
+           width: 80%;
+           max-width: 400px;
+           text-align: center;
+       }
+       
+       .confirmation-inner p {
+           font-size: 1.8rem;
+           margin-bottom: 2rem;
+       }
+       
+       .confirmation-buttons {
+           display: flex;
+           justify-content: center;
+           gap: 1rem;
+       }
+       
+       .error-message {
+           background-color: #ffefef;
+           border-left: 4px solid var(--red);
+           color: var(--red);
+           padding: 1rem;
+           margin-bottom: 1.5rem;
+           border-radius: 0.5rem;
+           font-size: 1.5rem;
+           display: flex;
+           align-items: center;
+       }
+       
+       .error-message i {
+           margin-right: 0.8rem;
+           font-size: 1.8rem;
+       }
+       
+       body.dark .confirmation-inner {
+           background-color: #3B5249;
+           color: #fff;
+       }
+       
+       body.dark .confirmation-inner button#confirm-no {
+           background-color: #4a4a4a;
+           color: #fff;
+       }
+   </style>
+
+</head>
+<body>
+
+<header class="header">
+   
+   <section class="flex">
+
+      <a href="home.html" class="logo">विद्या</a>
+
+      <form action="search.html" method="post" class="search-form">
+         <input type="text" name="search_box" required placeholder="search courses..." maxlength="100">
+         <button type="submit" class="fas fa-search"></button>
+      </form>
+
+      <div class="icons">
+         <div id="menu-btn" class="fas fa-bars"></div>
+         <div id="search-btn" class="fas fa-search"></div>
+         <div id="user-btn" class="fas fa-user"></div>
+         <div id="toggle-btn" class="fas fa-sun"></div>
+      </div>
+
+      <div class="profile">
+         <img src="images/pic-1.jpg" class="image" alt="">
+         <h3 class="name" id="userName">Guest</h3>
+         <p class="role" id="userRole">Not logged in</p>
+         <div class="flex-btn" id="guestButtons">
+            <a href="login.html" class="option-btn">login</a>
+            <a href="register.html" class="option-btn">register</a>
+         </div>
+         <div class="flex-btn" id="userButtons" style="display: none;">
+            <a href="#" id="studentDashboardLink" style="display: none;">Student Dashboard</a>
+            <a href="#" id="tutorDashboardLink" style="display: none;">Tutor Dashboard</a>
+            <a href="#" id="logoutLink">Logout</a>
+         </div>
+      </div>
+
+   </section>
+
+</header>   
+
+<div class="side-bar">
+
+   <div id="close-btn">
+      <i class="fas fa-times"></i>
+   </div>
+
+   <div class="profile">
+      <img src="images/pic-1.jpg" class="image" alt="">
+      <h3 class="name" id="sidebarUserName">Guest</h3>
+      <p class="role" id="sidebarUserRole">Not logged in</p>
+      <a href="profile.html" class="btn" id="profileBtn" style="display: none;">view profile</a>
+   </div>
+
+   <nav class="navbar">
+      <a href="home.html" class="active"><i class="fas fa-home"></i><span>Home</span></a>
+      <a href="courses.html"><i class="fas fa-book"></i><span>Courses</span></a>
+      <a href="teachers.html"><i class="fas fa-chalkboard-teacher"></i><span>Teachers</span></a>
+      <a href="about.html"><i class="fas fa-info-circle"></i><span>About</span></a>
+      <a href="contact.html"><i class="fas fa-envelope"></i><span>Contact</span></a>
+      <a href="student-dashboard.html" id="sidebarStudentDashboardLink" style="display: none;">
+         <i class="fas fa-user-graduate"></i><span>Student Dashboard</span>
+      </a>
+      <a href="tutor-dashboard.html" id="sidebarTutorDashboardLink" style="display: none;">
+         <i class="fas fa-chalkboard"></i><span>Tutor Dashboard</span>
+      </a>
+      <a href="login.html" id="sidebarLoginLink"><i class="fas fa-sign-in-alt"></i><span>Login</span></a>
+      <a href="register.html" id="sidebarRegisterLink"><i class="fas fa-user-plus"></i><span>Register</span></a>
+      <a href="#" id="sidebarLogoutLink" style="display: none;"><i class="fas fa-sign-out-alt"></i><span>Logout</span></a>
+   </nav>
+
+</div>
+
+<section class="home-grid">
+
+   <h1 class="heading">quick options</h1>
+
+   <div class="box-container">
+
+      <div class="box">
+         <h3 class="title">likes and comments</h3>
+         <p class="likes">total likes : <span>25</span></p>
+         <a href="#" class="inline-btn">view likes</a>
+         <p class="likes">total comments : <span>12</span></p>
+         <a href="#" class="inline-btn">view comments</a>
+         <p class="likes">saved playlists : <span>4</span></p>
+         <a href="#" class="inline-btn">view playlists</a>
+      </div>
+
+      <div class="box">
+         <h3 class="title">top categories</h3>
+         <div class="flex">
+            <a href="#"><i class="fas fa-code"></i><span>development</span></a>
+            <a href="#"><i class="fas fa-chart-simple"></i><span>business</span></a>
+            <a href="#"><i class="fas fa-pen"></i><span>design</span></a>
+            <a href="#"><i class="fas fa-chart-line"></i><span>marketing</span></a>
+            <a href="#"><i class="fas fa-music"></i><span>music</span></a>
+            <a href="#"><i class="fas fa-camera"></i><span>photography</span></a>
+            <a href="#"><i class="fas fa-cog"></i><span>software</span></a>
+            <a href="#"><i class="fas fa-vial"></i><span>science</span></a>
+         </div>
+      </div>
+
+      <div class="box">
+         <h3 class="title">popular topics</h3>
+         <div class="flex">
+            <a href="#"><i class="fab fa-html5"></i><span>HTML</span></a>
+            <a href="#"><i class="fab fa-css3"></i><span>CSS</span></a>
+            <a href="#"><i class="fab fa-js"></i><span>javascript</span></a>
+            <a href="#"><i class="fab fa-react"></i><span>react</span></a>
+            <a href="#"><i class="fab fa-php"></i><span>PHP</span></a>
+            <a href="#"><i class="fab fa-bootstrap"></i><span>bootstrap</span></a>
+         </div>
+      </div>
+
+      <div class="box">
+         <h3 class="title">become a tutor</h3>
+         <p class="tutor">Lorem ipsum, dolor sit amet consectetur adipisicing elit. Perspiciatis, nam?</p>
+         <a href="teachers.html" class="inline-btn">get started</a>
+      </div>
+
+   </div>
+
+</section>
+
+
+
+<section class="courses">
+
+   <h1 class="heading">our courses</h1>
+
+   <div class="box-container">
+
+      <div class="box">
+         <div class="tutor">
+            <img src="images/pic-2.jpg" alt="">
+            <div class="info">
+               <h3>john deo</h3>
+               <span>21-10-2022</span>
+            </div>
+         </div>
+         <div class="thumb">
+            <img src="images/thumb-1.png" alt="">
+            <span>10 videos</span>
+         </div>
+         <h3 class="title">complete HTML tutorial</h3>
+         <a href="playlist.html" class="inline-btn">view playlist</a>
+      </div>
+
+      <div class="box">
+         <div class="tutor">
+            <img src="images/pic-3.jpg" alt="">
+            <div class="info">
+               <h3>john deo</h3>
+               <span>21-10-2022</span>
+            </div>
+         </div>
+         <div class="thumb">
+            <img src="images/thumb-2.png" alt="">
+            <span>10 videos</span>
+         </div>
+         <h3 class="title">complete CSS tutorial</h3>
+         <a href="playlist.html" class="inline-btn">view playlist</a>
+      </div>
+
+      <div class="box">
+         <div class="tutor">
+            <img src="images/pic-4.jpg" alt="">
+            <div class="info">
+               <h3>john deo</h3>
+               <span>21-10-2022</span>
+            </div>
+         </div>
+         <div class="thumb">
+            <img src="images/thumb-3.png" alt="">
+            <span>10 videos</span>
+         </div>
+         <h3 class="title">complete JS tutorial</h3>
+         <a href="playlist.html" class="inline-btn">view playlist</a>
+      </div>
+
+      <div class="box">
+         <div class="tutor">
+            <img src="images/pic-5.jpg" alt="">
+            <div class="info">
+               <h3>john deo</h3>
+               <span>21-10-2022</span>
+            </div>
+         </div>
+         <div class="thumb">
+            <img src="images/thumb-4.png" alt="">
+            <span>10 videos</span>
+         </div>
+         <h3 class="title">complete Boostrap tutorial</h3>
+         <a href="playlist.html" class="inline-btn">view playlist</a>
+      </div>
+
+      <div class="box">
+         <div class="tutor">
+            <img src="images/pic-6.jpg" alt="">
+            <div class="info">
+               <h3>john deo</h3>
+               <span>21-10-2022</span>
+            </div>
+         </div>
+         <div class="thumb">
+            <img src="images/thumb-5.png" alt="">
+            <span>10 videos</span>
+         </div>
+         <h3 class="title">complete JQuery tutorial</h3>
+         <a href="playlist.html" class="inline-btn">view playlist</a>
+      </div>
+
+      <div class="box">
+         <div class="tutor">
+            <img src="images/pic-7.jpg" alt="">
+            <div class="info">
+               <h3>john deo</h3>
+               <span>21-10-2022</span>
+            </div>
+         </div>
+         <div class="thumb">
+            <img src="images/thumb-6.png" alt="">
+            <span>10 videos</span>
+         </div>
+         <h3 class="title">complete SASS tutorial</h3>
+         <a href="playlist.html" class="inline-btn">view playlist</a>
+      </div>
+
+   </div>
+
+   <div class="more-btn">
+      <a href="courses.html" class="inline-option-btn">view all courses</a>
+   </div>
+
+</section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<footer class="footer">
+
+  
+
+</footer>
+
+<!-- custom js file link  -->
+<script src="js/script.js"></script>
+
+<script>
+    // Check if user is logged in
+    const token = localStorage.getItem('token');
+    const user = JSON.parse(localStorage.getItem('user'));
+
+    function updateNavigation() {
+        // Update header profile
+        if (token && user) {
+            // User is logged in
+            document.getElementById('userName').textContent = user.name;
+            document.getElementById('userRole').textContent = user.role.charAt(0).toUpperCase() + user.role.slice(1);
+            document.getElementById('guestButtons').style.display = 'none';
+            document.getElementById('userButtons').style.display = 'flex';
+
+            // Show appropriate dashboard link based on role
+            if (user.role === 'student') {
+                document.getElementById('studentDashboardLink').style.display = 'block';
+                document.getElementById('studentDashboardLink').href = 'student-dashboard.html';
+            } else if (user.role === 'tutor') {
+                document.getElementById('tutorDashboardLink').style.display = 'block';
+                document.getElementById('tutorDashboardLink').href = 'tutor-dashboard.html';
+            }
+
+            // Update sidebar
+            document.getElementById('sidebarUserName').textContent = user.name;
+            document.getElementById('sidebarUserRole').textContent = user.role.charAt(0).toUpperCase() + user.role.slice(1);
+            document.getElementById('profileBtn').style.display = 'block';
+            document.getElementById('sidebarLoginLink').style.display = 'none';
+            document.getElementById('sidebarRegisterLink').style.display = 'none';
+            document.getElementById('sidebarLogoutLink').style.display = 'block';
+
+            if (user.role === 'student') {
+                document.getElementById('sidebarStudentDashboardLink').style.display = 'block';
+                document.getElementById('sidebarTutorDashboardLink').style.display = 'none';
+            } else if (user.role === 'tutor') {
+                document.getElementById('sidebarStudentDashboardLink').style.display = 'none';
+                document.getElementById('sidebarTutorDashboardLink').style.display = 'block';
+            }
+
+            // Handle logout
+            const logoutLinks = document.querySelectorAll('#logoutLink, #sidebarLogoutLink');
+            logoutLinks.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    localStorage.removeItem('token');
+                    localStorage.removeItem('user');
+                    window.location.reload();
+                });
+            });
+        } else {
+            // User is not logged in
+            document.getElementById('userName').textContent = 'Guest';
+            document.getElementById('userRole').textContent = 'Not logged in';
+            document.getElementById('guestButtons').style.display = 'flex';
+            document.getElementById('userButtons').style.display = 'none';
+
+            // Update sidebar
+            document.getElementById('sidebarUserName').textContent = 'Guest';
+            document.getElementById('sidebarUserRole').textContent = 'Not logged in';
+            document.getElementById('profileBtn').style.display = 'none';
+            document.getElementById('sidebarLoginLink').style.display = 'block';
+            document.getElementById('sidebarRegisterLink').style.display = 'block';
+            document.getElementById('sidebarLogoutLink').style.display = 'none';
+            document.getElementById('sidebarStudentDashboardLink').style.display = 'none';
+            document.getElementById('sidebarTutorDashboardLink').style.display = 'none';
+        }
+    }
+
+    // Update navigation when page loads
+    updateNavigation();
+</script>
+
+   
+</body>
+</html>

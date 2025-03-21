@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Course Viewer - Education Platform</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .course-view-container {
+            display: flex;
+            height: calc(100vh - 4rem);
+            margin-top: 4rem;
+        }
+        
+        .sidebar {
+            width: 320px;
+            background: #f8f9fa;
+            border-right: 1px solid #e5e5e5;
+            overflow-y: auto;
+            height: 100%;
+            flex-shrink: 0;
+        }
+        
+        .course-info {
+            padding: 1.5rem;
+            border-bottom: 1px solid #e5e5e5;
+        }
+
+        .course-title {
+            font-size: 1.4rem;
+            margin-bottom: 0.5rem;
+            color: var(--dark-color);
+        }
+        
+        .progress-container {
+            margin-top: 1rem;
+        }
+        
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+            color: var(--light-color);
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e5e5e5;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--primary-color);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .lessons-list {
+            padding: 0;
+            margin: 0;
+            list-style: none;
+        }
+        
+        .lesson-item {
+            border-bottom: 1px solid #e5e5e5;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        
+        .lesson-item:hover {
+            background: #f0f0f0;
+        }
+        
+        .lesson-item.active {
+            background: #e8f4ff;
+            border-left: 4px solid var(--primary-color);
+        }
+        
+        .lesson-item.completed {
+            background: #f5fff5;
+        }
+        
+        .lesson-item.completed .lesson-icon {
+            color: #4caf50;
+        }
+        
+        .lesson-link {
+            padding: 1rem 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            text-decoration: none;
+            color: var(--dark-color);
+            position: relative;
+        }
+        
+        .lesson-icon {
+            font-size: 1.2rem;
+            color: var(--light-color);
+            width: 20px;
+            text-align: center;
+        }
+        
+        .lesson-title {
+            flex: 1;
+            font-size: 0.95rem;
+        }
+        
+        .lesson-duration {
+            font-size: 0.8rem;
+            color: var(--light-color);
+        }
+        
+        .content-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        
+        .video-container {
+            flex: 1;
+            background: #000;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .video-player {
+            width: 100%;
+            height: 100%;
+            max-height: 80vh;
+        }
+        
+        .no-video {
+            color: white;
+            text-align: center;
+            padding: 2rem;
+        }
+        
+        .no-video i {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
+        
+        .video-controls {
+            padding: 1rem;
+            background: #fff;
+            border-top: 1px solid #e5e5e5;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .video-title-container {
+            flex: 1;
+        }
+        
+        .video-title {
+            font-size: 1.1rem;
+            font-weight: bold;
+            margin-bottom: 0.25rem;
+        }
+
+        .video-info {
+            font-size: 0.9rem;
+            color: var(--light-color);
+        }
+        
+        .nav-buttons {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .nav-btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .prev-btn {
+            background: #f0f0f0;
+            color: var(--dark-color);
+        }
+        
+        .next-btn {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .mark-complete-btn {
+            background: #4caf50;
+            color: white;
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .mark-complete-btn.completed {
+            background: #f0f0f0;
+            color: #4caf50;
+        }
+        
+        .loading-spinner {
+            color: white;
+            font-size: 2rem;
+        }
+        
+        /* Mobile responsive */
+        @media (max-width: 768px) {
+            .course-view-container {
+                flex-direction: column;
+                height: auto;
+            }
+            
+            .sidebar {
+                width: 100%;
+                height: auto;
+                max-height: 40vh;
+            }
+            
+            .content-area {
+                height: 60vh;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <section class="flex">
+            <a href="#" class="logo">विद्या</a>
+            <div class="icons">
+                <div id="menu-btn" class="fas fa-bars"></div>
+                <div id="toggle-sidebar-btn" class="fas fa-list-ul"></div>
+                <div id="user-btn" class="fas fa-user"></div>
+                <a href="courses.html" class="fas fa-graduation-cap" title="All Courses"></a>
+                <div id="header-logout-btn" class="fas fa-sign-out-alt" style="cursor: pointer;" title="Logout"></div>
+            </div>
+            <div class="profile">
+                <img src="images/pic-1.jpg" class="image" alt="">
+                <p class="name">Loading...</p>
+                <p class="role">Student</p>
+            </div>
+        </section>
+    </header>
+
+        <div class="course-view-container">
+        <div class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <a href="#" class="logo">विद्या</a>
+                <button id="close-sidebar" class="close-btn"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="course-info">
+                <h1 class="course-title" id="courseTitle">Loading course...</h1>
+                <div class="progress-container">
+                    <div class="progress-label">
+                        <span>Progress</span>
+                        <span id="progressText">0%</span>
+                        </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressFill"></div>
+                    </div>
+                </div>
+            </div>
+            <ul class="lessons-list" id="lessonsList">
+                <li class="lesson-item">
+                    <div class="lesson-link">
+                        <div class="lesson-icon">
+                            <i class="fas fa-spinner fa-spin"></i>
+                    </div>
+                        <div class="lesson-title">Loading lessons...</div>
+                    </div>
+                </li>
+            </ul>
+                    </div>
+        
+        <div class="content-area">
+            <div class="video-container" id="videoContainer">
+                <div class="loading-spinner">
+                    <i class="fas fa-spinner fa-spin"></i>
+                </div>
+            </div>
+
+            <div class="video-controls">
+                <div class="video-title-container">
+                    <h3 class="video-title" id="currentVideoTitle">Loading lesson...</h3>
+                    <div class="video-info" id="currentVideoInfo">0 min</div>
+                            </div>
+                
+                <div class="action-buttons">
+                    <button class="mark-complete-btn" id="markCompleteBtn">
+                        <i class="fas fa-check"></i> Mark as Completed
+                    </button>
+                </div>
+                
+                <div class="nav-buttons">
+                    <button class="nav-btn prev-btn" id="prevBtn" disabled>
+                        <i class="fas fa-chevron-left"></i> Previous
+                    </button>
+                    <button class="nav-btn next-btn" id="nextBtn" disabled>
+                        Next <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/script.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/videoPlayer.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            try {
+                // Check authentication
+                const token = localStorage.getItem('token');
+                if (!token) {
+                    window.location.href = 'login.html';
+                    return;
+                }
+
+                // Get course ID from URL
+                const urlParams = new URLSearchParams(window.location.search);
+                const courseId = urlParams.get('id');
+                
+                if (!courseId) {
+                    alert('No course specified');
+                    window.location.href = 'courses.html';
+                    return;
+                }
+
+                // Fetch user profile
+                const profileResponse = await fetch('http://localhost:5001/api/user/profile', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (!profileResponse.ok) {
+                    throw new Error('Failed to fetch profile');
+                }
+
+                const profileData = await profileResponse.json();
+                const user = profileData.user;
+
+                // Update profile information
+                const nameElements = document.querySelectorAll('.name');
+                nameElements.forEach(element => {
+                    element.textContent = user.name;
+                });
+
+                // Fetch course details
+                const courseResponse = await fetch(`http://localhost:5001/api/courses/${courseId}`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (!courseResponse.ok) {
+                    throw new Error('Failed to fetch course');
+                }
+
+                const course = await courseResponse.json();
+                console.log('Course details:', course);
+
+                // Check if user is enrolled in this course
+                const isEnrolled = course.enrolledStudents && course.enrolledStudents.includes(user.id);
+                if (!isEnrolled) {
+                    alert('You are not enrolled in this course');
+                    window.location.href = `course-detail.html?id=${courseId}`;
+                    return;
+                }
+
+                // Update course title
+                document.getElementById('courseTitle').textContent = course.title;
+
+                // Find student progress in this course
+                let studentProgress = { progress: 0, completedLessons: [] };
+                if (course.studentProgress && course.studentProgress.length > 0) {
+                    const progress = course.studentProgress.find(p => p.studentId === user.id);
+                    if (progress) {
+                        studentProgress = progress;
+                    }
+                }
+
+                // Update progress bar
+                document.getElementById('progressText').textContent = `${studentProgress.progress}%`;
+                document.getElementById('progressFill').style.width = `${studentProgress.progress}%`;
+
+                // Variables to track current lesson
+                let materials = course.materials || [];
+                let currentLessonIndex = 0;
+                let currentLesson = null;
+
+                // Handle empty materials
+                if (materials.length === 0) {
+                    document.getElementById('lessonsList').innerHTML = `
+                        <li class="lesson-item">
+                            <div class="lesson-link">
+                                <div class="lesson-icon">
+                                    <i class="fas fa-info-circle"></i>
+                                </div>
+                                <div class="lesson-title">No lessons available</div>
+                            </div>
+                        </li>
+                    `;
+                    
+                    document.getElementById('videoContainer').innerHTML = `
+                        <div class="no-video">
+                            <i class="fas fa-video-slash"></i>
+                            <h2>No videos available</h2>
+                            <p>This course doesn't have any video content yet.</p>
+                        </div>
+                    `;
+                    
+                    document.getElementById('currentVideoTitle').textContent = 'No content';
+                    document.getElementById('currentVideoInfo').textContent = '';
+                    document.getElementById('markCompleteBtn').disabled = true;
+                    document.getElementById('prevBtn').disabled = true;
+                    document.getElementById('nextBtn').disabled = true;
+                    
+                    return;
+                }
+
+                // Populate lessons list
+                const lessonsList = document.getElementById('lessonsList');
+                lessonsList.innerHTML = materials.map((material, index) => {
+                    const isCompleted = studentProgress.completedLessons && 
+                                        studentProgress.completedLessons.includes(material._id);
+                    
+                    return `
+                        <li class="lesson-item ${index === 0 ? 'active' : ''} ${isCompleted ? 'completed' : ''}" 
+                            data-index="${index}" data-id="${material._id}">
+                            <div class="lesson-link" onclick="selectLesson(${index})">
+                                <div class="lesson-icon">
+                                    <i class="${isCompleted ? 'fas fa-check-circle' : 'fas fa-play-circle'}"></i>
+                                </div>
+                                <div class="lesson-title">${material.title || 'Untitled'}</div>
+                                <div class="lesson-duration">${material.duration || 0} min</div>
+                            </div>
+                        </li>
+                    `;
+                }).join('');
+
+                // Load first lesson
+                loadLesson(0);
+
+                // Function to load a lesson
+                function loadLesson(index) {
+                    if (index < 0 || index >= materials.length) return;
+
+                    // Update current lesson index
+                    currentLessonIndex = index;
+                    currentLesson = materials[index];
+
+                    // Update active lesson in sidebar
+                    const lessonItems = document.querySelectorAll('.lesson-item');
+                    lessonItems.forEach(item => item.classList.remove('active'));
+                    lessonItems[index].classList.add('active');
+
+                    // Update lesson information
+                    document.getElementById('currentVideoTitle').textContent = currentLesson.title || 'Untitled';
+                    document.getElementById('currentVideoInfo').textContent = `${currentLesson.duration || 0} min`;
+
+                    // Check if lesson is completed
+                    const isCompleted = studentProgress.completedLessons && 
+                                      studentProgress.completedLessons.includes(currentLesson._id);
+                    
+                    const markCompleteBtn = document.getElementById('markCompleteBtn');
+                    if (isCompleted) {
+                        markCompleteBtn.innerHTML = '<i class="fas fa-check"></i> Completed';
+                        markCompleteBtn.classList.add('completed');
+                    } else {
+                        markCompleteBtn.innerHTML = '<i class="fas fa-check"></i> Mark as Completed';
+                        markCompleteBtn.classList.remove('completed');
+                    }
+
+                    // Update navigation buttons
+                    document.getElementById('prevBtn').disabled = index === 0;
+                    document.getElementById('nextBtn').disabled = index === materials.length - 1;
+
+                    // Load video
+                    const videoUrl = currentLesson.url || currentLesson.fileUrl;
+                    if (videoUrl) {
+                        document.getElementById('videoContainer').innerHTML = `
+                            <video id="videoPlayer" class="video-player" controls autoplay>
+                                <source src="${videoUrl}" type="video/mp4">
+                                Your browser does not support the video tag.
+                            </video>
+                        `;
+                    } else {
+                        document.getElementById('videoContainer').innerHTML = `
+                            <div class="no-video">
+                                <i class="fas fa-video-slash"></i>
+                                <h2>No video available</h2>
+                                <p>This lesson doesn't have a video.</p>
+                            </div>
+                        `;
+                    }
+                }
+
+                // Make loadLesson available globally
+                window.selectLesson = loadLesson;
+
+                // Handle mark as completed button
+                document.getElementById('markCompleteBtn').addEventListener('click', async () => {
+                    try {
+                        if (!currentLesson) return;
+                        
+                        const lessonId = currentLesson._id;
+                        const isCompleted = studentProgress.completedLessons && 
+                                          studentProgress.completedLessons.includes(lessonId);
+                        
+                        // If already completed, do nothing
+                        if (isCompleted) return;
+                        
+                        // Send request to mark lesson as completed
+                        const response = await fetch(`http://localhost:5001/api/student/progress/${courseId}`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Authorization': `Bearer ${token}`
+                            },
+                            body: JSON.stringify({
+                                lessonId: lessonId,
+                                completed: true
+                            })
+                        });
+
+                        if (!response.ok) {
+                            throw new Error('Failed to update progress');
+                        }
+
+                        const result = await response.json();
+                        
+                        // Update local student progress
+                        studentProgress = result.progress;
+                        
+                        // Update UI
+                        document.getElementById('progressText').textContent = `${studentProgress.progress}%`;
+                        document.getElementById('progressFill').style.width = `${studentProgress.progress}%`;
+                        
+                        // Update lesson UI
+                        const lessonItem = document.querySelector(`.lesson-item[data-id="${lessonId}"]`);
+                        if (lessonItem) {
+                            lessonItem.classList.add('completed');
+                            lessonItem.querySelector('.lesson-icon i').className = 'fas fa-check-circle';
+                        }
+                        
+                        // Update mark complete button
+                        const markCompleteBtn = document.getElementById('markCompleteBtn');
+                        markCompleteBtn.innerHTML = '<i class="fas fa-check"></i> Completed';
+                        markCompleteBtn.classList.add('completed');
+                        
+                        // Auto navigate to next lesson if available
+                        if (currentLessonIndex < materials.length - 1) {
+                            setTimeout(() => {
+                                loadLesson(currentLessonIndex + 1);
+                            }, 1000);
+                        }
+                        
+                    } catch (error) {
+                        console.error('Error updating progress:', error);
+                        alert('Failed to update progress: ' + error.message);
+                    }
+                });
+
+                // Handle navigation buttons
+                document.getElementById('prevBtn').addEventListener('click', () => {
+                    if (currentLessonIndex > 0) {
+                        loadLesson(currentLessonIndex - 1);
+                    }
+                });
+
+                document.getElementById('nextBtn').addEventListener('click', () => {
+                    if (currentLessonIndex < materials.length - 1) {
+                        loadLesson(currentLessonIndex + 1);
+                    }
+                });
+
+                // Toggle sidebar on mobile
+                document.getElementById('toggle-sidebar-btn').addEventListener('click', () => {
+                    const sidebar = document.getElementById('sidebar');
+                    sidebar.classList.toggle('hidden');
+                });
+
+                // Setup logout
+                document.getElementById('header-logout-btn').addEventListener('click', handleLogout);
+
+            } catch (error) {
+                console.error('Error loading course:', error);
+                alert('Failed to load course: ' + error.message);
+            }
+        });
+
+        function handleLogout(e) {
+            e.preventDefault();
+            if (confirm('Are you sure you want to logout?')) {
+                localStorage.removeItem('token');
+                localStorage.removeItem('user');
+                window.location.href = 'login.html';
+            }
+        }
+
+        function loadLesson(lesson) {
+            currentLesson = lesson;
+            
+            // Update UI
+            document.querySelectorAll('.lesson-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            const lessonElement = document.querySelector(`.lesson-item[data-id="${lesson._id}"]`);
+            if (lessonElement) {
+                lessonElement.classList.add('active');
+                lessonElement.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }
+            
+            // Update content area
+            const videoContainer = document.getElementById('videoContainer');
+            const lessonContent = document.getElementById('lessonContent');
+            
+            // Set title and details
+            document.getElementById('currentLessonTitle').textContent = lesson.title || 'Untitled Lesson';
+            
+            // Clear previous content
+            videoContainer.innerHTML = '';
+            
+            if (lesson.videoUrl) {
+                // Create enhanced video player
+                const player = window.videoPlayer.createPlayer(lesson.videoUrl, {
+                    title: '',
+                    autoplay: false,
+                    width: '100%',
+                    height: '100%',
+                    elementId: 'current-lesson-video',
+                    showTroubleshootLink: true
+                });
+                videoContainer.appendChild(player);
+                
+                // Show video container, hide no-video message
+                videoContainer.style.display = 'flex';
+                document.getElementById('noVideoMessage').style.display = 'none';
+            } else {
+                // Show no-video message, hide video container
+                videoContainer.style.display = 'none';
+                document.getElementById('noVideoMessage').style.display = 'flex';
+            }
+            
+            // Update lesson description
+            lessonContent.innerHTML = `
+                <h3>${lesson.title}</h3>
+                <p>${lesson.description || 'No description available.'}</p>
+            `;
+            
+            // Mark as viewed
+            markLessonAsViewed(lesson._id);
+        }
+    </script>
+</body>
+</html> 

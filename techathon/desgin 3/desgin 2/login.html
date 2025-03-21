@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+   <meta charset="UTF-8">
+   <meta http-equiv="X-UA-Compatible" content="IE=edge">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <title>Login - Education Platform</title>
+
+   <!-- font awesome cdn link  -->
+   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+   <!-- custom css file link  -->
+   <link rel="stylesheet" href="css/style.css">
+
+</head>
+<body>
+
+<header class="header">
+   
+   <section class="flex">
+
+      <a href="home.html" class="logo">विद्या</a>
+
+      <form action="search.html" method="post" class="search-form">
+         <input type="text" name="search_box" required placeholder="search courses..." maxlength="100">
+         <button type="submit" class="fas fa-search"></button>
+      </form>
+
+      <div class="icons">
+         <div id="menu-btn" class="fas fa-bars"></div>
+         <div id="search-btn" class="fas fa-search"></div>
+         <div id="user-btn" class="fas fa-user"></div>
+         <div id="toggle-btn" class="fas fa-sun"></div>
+      </div>
+
+      <div class="profile">
+         <img src="images/pic-1.jpg" class="image" alt="">
+         <h3 class="name">shaikh anas</h3>
+         <p class="role">studen</p>
+         <a href="profile.html" class="btn">view profile</a>
+         <div class="flex-btn">
+            <a href="login.html" class="option-btn">login</a>
+            <a href="register.html" class="option-btn">register</a>
+         </div>
+      </div>
+
+   </section>
+
+</header>   
+
+<div class="side-bar">
+
+   <div id="close-btn">
+      <i class="fas fa-times"></i>
+   </div>
+
+   <div class="profile">
+      <img src="images/pic-1.jpg" class="image" alt="">
+      <h3 class="name">shaikh anas</h3>
+      <p class="role">studen</p>
+      <a href="profile.html" class="btn">view profile</a>
+   </div>
+
+   <nav class="navbar">
+      <a href="home.html"><i class="fas fa-home"></i><span>home</span></a>
+      <a href="about.html"><i class="fas fa-question"></i><span>about</span></a>
+      <a href="courses.html"><i class="fas fa-graduation-cap"></i><span>courses</span></a>
+      <a href="teachers.html"><i class="fas fa-chalkboard-user"></i><span>teachers</span></a>
+      <a href="contact.html"><i class="fas fa-headset"></i><span>contact us</span></a>
+   </nav>
+
+</div>
+
+<section class="form-container">
+   <h2 style="font-size: 3rem; margin-bottom: 2rem; text-align: center; color: var(--main-color);">Welcome Back</h2>
+   
+   <form id="login-form">
+      <h3>Login to Your Account</h3>
+      
+      <!-- Error message container -->
+      <div id="error-message" style="display: none;"></div>
+      
+      <div class="form-group">
+         <label for="email">Email</label>
+         <input type="email" id="email" name="email" class="box" required>
+      </div>
+
+      <div class="form-group">
+         <label for="password">Password</label>
+         <input type="password" id="password" name="password" class="box" required>
+      </div>
+
+      <div class="form-group">
+         <label for="role">Login As</label>
+         <select id="role" name="role" class="box" required>
+            <option value="student">Student</option>
+            <option value="tutor">Tutor</option>
+         </select>
+      </div>
+
+      <button type="submit" class="btn" style="width: 100%; margin-top: 1.5rem;">Login</button>
+   </form>
+   
+   <p>Don't have an account? <a href="register.html">Register as Student</a> or <a href="tutor-register.html">Register as Tutor</a></p>
+   
+</section>
+
+<!-- Dark Mode Toggle Button -->
+<div id="dark-mode-floating-toggle" style="position: fixed; bottom: 20px; right: 20px; z-index: 9999; background: #3B5249; color: white; width: 50px; height: 50px; border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.2);">
+    <i class="fas fa-moon" style="font-size: 20px;"></i>
+</div>
+
+<!-- custom js file link  -->
+<script src="js/script.js"></script>
+
+<script>
+    document.getElementById('login-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+        const role = document.getElementById('role').value;
+        
+        // Clear previous error messages
+        const errorDiv = document.getElementById('error-message');
+        errorDiv.style.display = 'none';
+        errorDiv.textContent = '';
+
+        try {
+            const response = await fetch('http://localhost:5001/api/auth/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ email, password, role })
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                // Store token and user data
+                localStorage.setItem('token', data.token);
+                localStorage.setItem('user', JSON.stringify(data.user));
+
+                // Redirect based on user role
+                if (data.user.role === 'student') {
+                    window.location.href = 'student-dashboard.html';
+                } else if (data.user.role === 'tutor') {
+                    window.location.href = 'tutor-dashboard.html';
+                } else {
+                    window.location.href = 'home.html';
+                }
+            } else {
+                // Display detailed error message
+                console.error('Login error:', data);
+                
+                errorDiv.style.display = 'block';
+                errorDiv.innerHTML = '<i class="fas fa-exclamation-circle"></i> ';
+                
+                if (data.msg === 'Invalid credentials') {
+                    errorDiv.innerHTML += 'Email or password is incorrect. Please try again.';
+                } else if (data.msg === 'Invalid role') {
+                    errorDiv.innerHTML += 'You selected the wrong role. Please select ' + 
+                          (role === 'student' ? 'tutor' : 'student') + 
+                          ' and try again.';
+                } else {
+                    errorDiv.innerHTML += data.msg || 'Login failed. Please try again.';
+                }
+            }
+        } catch (error) {
+            console.error('Login error:', error);
+            errorDiv.style.display = 'block';
+            errorDiv.innerHTML = '<i class="fas fa-exclamation-circle"></i> Login failed. Please check your internet connection and try again.';
+        }
+    });
+</script>
+
+<!-- Dark Mode Manual Toggle -->
+<script>
+    document.getElementById('dark-mode-floating-toggle').addEventListener('click', function() {
+        // Toggle dark mode class
+        document.body.classList.toggle('dark');
+        
+        // Update button icon
+        const icon = this.querySelector('i');
+        if (document.body.classList.contains('dark')) {
+            localStorage.setItem('darkMode', 'enabled');
+            icon.classList.remove('fa-moon');
+            icon.classList.add('fa-sun');
+        } else {
+            localStorage.setItem('darkMode', 'disabled');
+            icon.classList.remove('fa-sun');
+            icon.classList.add('fa-moon');
+        }
+    });
+    
+    // Initialize button state based on current mode
+    document.addEventListener('DOMContentLoaded', function() {
+        const darkModeEnabled = document.body.classList.contains('dark') || localStorage.getItem('darkMode') === 'enabled';
+        
+        // Apply dark mode if enabled in localStorage but not yet applied
+        if (localStorage.getItem('darkMode') === 'enabled' && !document.body.classList.contains('dark')) {
+            document.body.classList.add('dark');
+        }
+        
+        const icon = document.getElementById('dark-mode-floating-toggle').querySelector('i');
+        
+        if (darkModeEnabled) {
+            icon.classList.remove('fa-moon');
+            icon.classList.add('fa-sun');
+        } else {
+            icon.classList.remove('fa-sun');
+            icon.classList.add('fa-moon');
+        }
+    });
+</script>
+
+</body>
+</html>

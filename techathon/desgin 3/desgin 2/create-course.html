@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Course - Education Platform</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/dashboard.css">
+    <style>
+        .course-form {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem;
+            background: var(--white);
+            border-radius: 0.5rem;
+            box-shadow: var(--box-shadow);
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--black);
+            font-weight: 500;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid var(--light-bg);
+            border-radius: 0.5rem;
+            font-size: 1rem;
+        }
+
+        .form-group textarea {
+            min-height: 150px;
+            resize: vertical;
+        }
+
+        .video-upload {
+            border: 2px dashed var(--light-bg);
+            padding: 2rem;
+            text-align: center;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .video-upload:hover {
+            border-color: var(--main-color);
+        }
+
+        .video-upload i {
+            font-size: 3rem;
+            color: var(--main-color);
+            margin-bottom: 1rem;
+        }
+
+        .video-list {
+            margin-top: 1rem;
+        }
+
+        .video-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem;
+            background: var(--quaternary-color);
+            border-radius: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .video-item .video-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .video-item .video-info i {
+            color: var(--main-color);
+        }
+
+        .video-item .delete-video {
+            color: var(--red);
+            cursor: pointer;
+            background: transparent;
+            border: none;
+            font-size: 1rem;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 1rem;
+            background: var(--main-color);
+            color: var(--white);
+            border: none;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .submit-btn:hover {
+            background: var(--secondary-color);
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 4px;
+            background: var(--light-bg);
+            border-radius: 2px;
+            margin-top: 0.5rem;
+            display: none;
+        }
+
+        .progress-bar .progress {
+            height: 100%;
+            background: var(--tertiary-color);
+            border-radius: 2px;
+            width: 0;
+            transition: width 0.3s ease;
+        }
+        
+        .error-message {
+            color: var(--red);
+            background: #ffefef;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            border-left: 4px solid var(--red);
+        }
+        
+        .success-message {
+            color: var(--tertiary-color);
+            background: var(--accent-color);
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            border-left: 4px solid var(--tertiary-color);
+        }
+
+        /* Dark mode specific styles */
+        body.dark .create-course-container {
+            color: #fff;
+        }
+
+        body.dark .form-container {
+            background: #3B5249;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+        }
+
+        body.dark .form-group label {
+            color: #fff;
+        }
+
+        body.dark .form-group input,
+        body.dark .form-group textarea,
+        body.dark .form-group select {
+            background: #2D3A3A;
+            color: #fff;
+            border: 1px solid #557B83;
+        }
+
+        body.dark .material-item {
+            background: #344E41;
+            border: 1px solid #557B83;
+        }
+
+        body.dark .material-content h4 {
+            color: #fff;
+        }
+
+        body.dark .drag-area {
+            background: #2D3A3A;
+            border: 2px dashed #557B83;
+            color: #A4B494;
+        }
+
+        body.dark .thumbnail-preview {
+            background: #344E41;
+            border: 1px solid #557B83;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <section class="flex">
+            <a href="tutor-dashboard.html" class="logo">विद्या</a>
+            <div class="icons">
+                <div id="menu-btn" class="fas fa-bars"></div>
+                <div id="user-btn" class="fas fa-user"></div>
+            </div>
+            <div class="profile">
+                <img src="images/pic-1.jpg" class="image" alt="">
+                <p class="name">Loading...</p>
+                <p class="role">Tutor</p>
+            </div>
+        </section>
+    </header>
+
+    <div class="side-bar">
+        <div class="close-side-bar">
+            <i class="fas fa-times"></i>
+        </div>
+        <div class="profile">
+            <img src="images/pic-1.jpg" class="image" alt="">
+            <p class="name">Loading...</p>
+            <p class="role">Tutor</p>
+        </div>
+        <nav class="navbar">
+            <a href="tutor-dashboard.html"><i class="fas fa-home"></i><span>Home</span></a>
+            <a href="create-course.html" class="active"><i class="fas fa-plus"></i><span>Create Course</span></a>
+            <a href="#"><i class="fas fa-book"></i><span>My Courses</span></a>
+            <a href="#"><i class="fas fa-calendar"></i><span>Schedule</span></a>
+            <a href="#"><i class="fas fa-users"></i><span>Students</span></a>
+            <a href="#"><i class="fas fa-star"></i><span>Reviews</span></a>
+            <a href="#"><i class="fas fa-cog"></i><span>Settings</span></a>
+            <a href="#" id="logout-btn"><i class="fas fa-sign-out-alt"></i><span>Logout</span></a>
+        </nav>
+    </div>
+
+    <section class="dashboard">
+        <h1 class="heading">Create New Course</h1>
+        
+        <form class="course-form" id="course-form">
+            <div class="form-group">
+                <label for="title">Course Title</label>
+                <input type="text" id="title" name="title" required>
+            </div>
+
+            <div class="form-group">
+                <label for="description">Course Description</label>
+                <textarea id="description" name="description" required></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="subject">Subject</label>
+                <select id="subject" name="subject" required>
+                    <option value="">Select a subject</option>
+                    <option value="Mathematics">Mathematics</option>
+                    <option value="Physics">Physics</option>
+                    <option value="Chemistry">Chemistry</option>
+                    <option value="Biology">Biology</option>
+                    <option value="Computer Science">Computer Science</option>
+                    <option value="English">English</option>
+                    <option value="History">History</option>
+                    <option value="Geography">Geography</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="price">Price ($)</label>
+                <input type="number" id="price" name="price" min="0" step="0.01" required>
+            </div>
+
+            <div class="form-group">
+                <label for="duration">Duration (minutes)</label>
+                <input type="number" id="duration" name="duration" min="1" required>
+            </div>
+
+            <div class="form-group">
+                <label for="level">Course Level</label>
+                <select id="level" name="level" required>
+                    <option value="">Select level</option>
+                    <option value="Beginner">Beginner</option>
+                    <option value="Intermediate">Intermediate</option>
+                    <option value="Advanced">Advanced</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Course Materials <span style="font-size: 0.8rem; color: var(--light-color);">(Optional)</span></label>
+                <div class="video-upload" id="video-upload">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                    <p>Drag and drop video files here or click to browse</p>
+                    <input type="file" id="video-input" accept="video/*" multiple style="display: none;">
+                </div>
+                <div class="progress-bar" id="upload-progress">
+                    <div class="progress"></div>
+                </div>
+                <div class="video-list" id="video-list"></div>
+                <p style="margin-top: 0.5rem; color: var(--light-color); font-size: 0.8rem;">You can create a course without videos and add them later.</p>
+            </div>
+
+            <button type="submit" class="submit-btn">Create Course</button>
+        </form>
+    </section>
+
+    <script src="js/script.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            try {
+                const token = localStorage.getItem('token');
+                if (!token) {
+                    window.location.href = 'login.html';
+                    return;
+                }
+
+                // Update profile information
+                const response = await fetch('http://localhost:5001/api/user/profile', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to fetch profile');
+                }
+
+                const data = await response.json();
+                const user = data.user;
+
+                // Update name in header and sidebar
+                const nameElements = document.querySelectorAll('.name');
+                nameElements.forEach(element => {
+                    element.textContent = user.name;
+                });
+
+                // Video upload handling
+                const videoUpload = document.getElementById('video-upload');
+                const videoInput = document.getElementById('video-input');
+                const videoList = document.getElementById('video-list');
+                const progressBar = document.getElementById('upload-progress');
+                const progress = progressBar.querySelector('.progress');
+                const courseForm = document.getElementById('course-form');
+
+                let uploadedVideos = [];
+
+                videoUpload.addEventListener('click', () => {
+                    videoInput.click();
+                });
+
+                videoUpload.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                    videoUpload.style.borderColor = 'var(--main-color)';
+                });
+
+                videoUpload.addEventListener('dragleave', () => {
+                    videoUpload.style.borderColor = 'var(--light-bg)';
+                });
+
+                videoUpload.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    videoUpload.style.borderColor = 'var(--light-bg)';
+                    const files = e.dataTransfer.files;
+                    handleVideoFiles(files);
+                });
+
+                videoInput.addEventListener('change', (e) => {
+                    handleVideoFiles(e.target.files);
+                });
+
+                function handleVideoFiles(files) {
+                    Array.from(files).forEach(file => {
+                        if (file.type.startsWith('video/')) {
+                            handleVideoUpload(file);
+                        } else {
+                            const errorMsg = document.createElement('div');
+                            errorMsg.className = 'error-message';
+                            errorMsg.style.color = 'var(--red)';
+                            errorMsg.style.background = '#ffefef';
+                            errorMsg.style.padding = '10px';
+                            errorMsg.style.borderRadius = '5px';
+                            errorMsg.style.marginBottom = '10px';
+                            errorMsg.style.borderLeft = '4px solid var(--red)';
+                            errorMsg.innerHTML = '<i class="fas fa-exclamation-circle"></i> Please upload only video files';
+                            
+                            const videoSection = document.querySelector('.video-section');
+                            videoSection.insertBefore(errorMsg, videoSection.firstChild);
+                            
+                            // Remove error message after 5 seconds
+                            setTimeout(() => errorMsg.remove(), 5000);
+                        }
+                    });
+                }
+
+                // Handle video upload
+                async function handleVideoUpload(file) {
+                    try {
+                        const token = localStorage.getItem('token');
+                        if (!token) {
+                            window.location.href = 'login.html';
+                            return;
+                        }
+
+                        // Show upload progress
+                        progressBar.style.display = 'block';
+                        progress.style.width = '0%';
+
+                        // Create FormData object
+                        const formData = new FormData();
+                        formData.append('video', file);
+
+                        // Upload file directly to server
+                        const response = await fetch('http://localhost:5001/api/courses/upload-video', {
+                            method: 'POST',
+                            headers: {
+                                'Authorization': `Bearer ${token}`
+                            },
+                            body: formData,
+                            // Track upload progress
+                            onUploadProgress: (progressEvent) => {
+                                const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+                                progress.style.width = percentCompleted + '%';
+                            }
+                        });
+
+                        // Hide progress bar
+                        progressBar.style.display = 'none';
+
+                        if (!response.ok) {
+                            const errorData = await response.json();
+                            throw new Error(errorData.msg || 'Failed to upload video');
+                        }
+
+                        const data = await response.json();
+                        console.log('Upload response:', data);
+
+                        // Add the uploaded video to the materials array
+                        uploadedVideos.push({
+                            title: file.name.split('.')[0],
+                            description: 'Video lesson',
+                            type: 'video',
+                            fileUrl: data.fileUrl, // Use fileUrl from response
+                            videoUrl: data.fileUrl, // Also set videoUrl for compatibility
+                            duration: 0
+                        });
+
+                        // Update the video list
+                        updateVideoList();
+                        
+                        // Reset file input
+                        videoInput.value = '';
+                        
+                    } catch (error) {
+                        console.error('Error uploading video:', error);
+                        // Replace alert with inline error message
+                        progressBar.style.display = 'none';
+                        
+                        const errorMsg = document.createElement('div');
+                        errorMsg.className = 'error-message';
+                        errorMsg.style.color = 'var(--red)';
+                        errorMsg.style.background = '#ffefef';
+                        errorMsg.style.padding = '10px';
+                        errorMsg.style.borderRadius = '5px';
+                        errorMsg.style.marginBottom = '10px';
+                        errorMsg.style.borderLeft = '4px solid var(--red)';
+                        errorMsg.innerHTML = `<i class="fas fa-exclamation-circle"></i> ${error.message || 'Failed to upload video. Please try again.'}`;
+                        
+                        const videoSection = document.querySelector('.video-section');
+                        videoSection.insertBefore(errorMsg, videoSection.firstChild);
+                        
+                        // Remove error message after 5 seconds
+                        setTimeout(() => errorMsg.remove(), 5000);
+                    }
+                }
+
+                // Update video list
+                function updateVideoList() {
+                    videoList.innerHTML = '';
+                    uploadedVideos.forEach((video, index) => {
+                        const videoItem = document.createElement('div');
+                        videoItem.className = 'video-item';
+                        
+                        // Create video element for preview
+                        const videoPreview = document.createElement('video');
+                        videoPreview.src = video.fileUrl || video.videoUrl;
+                        videoPreview.controls = true;
+                        videoPreview.muted = true;
+                        videoPreview.height = 100;
+                        
+                        const videoInfo = document.createElement('div');
+                        videoInfo.className = 'video-info';
+                        videoInfo.innerHTML = `
+                            <p class="video-title">${video.title}</p>
+                            <p class="video-desc">${video.description || 'No description'}</p>
+                        `;
+                        
+                        const deleteBtn = document.createElement('button');
+                        deleteBtn.className = 'delete-video';
+                        deleteBtn.innerHTML = '<i class="fas fa-trash"></i>';
+                        deleteBtn.dataset.index = index;
+                        deleteBtn.addEventListener('click', () => {
+                            uploadedVideos.splice(index, 1);
+                            updateVideoList();
+                        });
+                        
+                        videoItem.appendChild(videoPreview);
+                        videoItem.appendChild(videoInfo);
+                        videoItem.appendChild(deleteBtn);
+                        videoList.appendChild(videoItem);
+                    });
+                }
+
+                // Form submission
+                courseForm.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+
+                    try {
+                        const token = localStorage.getItem('token');
+                        if (!token) {
+                            window.location.href = 'login.html';
+                            return;
+                        }
+
+                        // Get form data
+                        const formData = {
+                            title: document.getElementById('title').value,
+                            description: document.getElementById('description').value,
+                            subject: document.getElementById('subject').value,
+                            price: parseFloat(document.getElementById('price').value),
+                            duration: parseInt(document.getElementById('duration').value),
+                            level: document.getElementById('level').value
+                            // Omit materials - we'll add them separately after course creation
+                        };
+
+                        console.log('Submitting course data:', formData);
+
+                        // Create course
+                        const response = await fetch('http://localhost:5001/api/courses', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Authorization': `Bearer ${token}`
+                            },
+                            body: JSON.stringify(formData)
+                        });
+
+                        const courseData = await response.json();
+
+                        if (!response.ok) {
+                            console.error('Course creation error:', courseData);
+                            // Replace alert with inline error message
+                            const errorDisplay = document.getElementById('form-errors');
+                            if (!errorDisplay) {
+                                errorDisplay = document.createElement('div');
+                                errorDisplay.id = 'form-errors';
+                                errorDisplay.style.color = '#c62828';
+                                errorDisplay.style.background = '#ffebee';
+                                errorDisplay.style.padding = '10px';
+                                errorDisplay.style.borderRadius = '5px';
+                                errorDisplay.style.marginBottom = '20px';
+                                courseForm.insertBefore(errorDisplay, courseForm.firstChild);
+                            }
+                            
+                            errorDisplay.innerHTML = `<i class="fas fa-exclamation-circle"></i> ${courseData.msg || 'Failed to create course'}`;
+                            errorDisplay.style.display = 'block';
+                            // Scroll to top of form to show error
+                            courseForm.scrollIntoView({ behavior: 'smooth' });
+                            throw new Error(courseData.msg || 'Failed to create course');
+                        }
+
+                        const courseId = courseData._id;
+                        console.log('Course created with ID:', courseId);
+
+                        // Add materials if any exist
+                        if (uploadedVideos.length > 0) {
+                            console.log(`Adding ${uploadedVideos.length} materials to course...`);
+                            
+                            // Add each video as a material to the course
+                            for (const video of uploadedVideos) {
+                                try {
+                                    const materialResponse = await fetch(`http://localhost:5001/api/courses/${courseId}/add-material`, {
+                                        method: 'POST',
+                                        headers: {
+                                            'Content-Type': 'application/json',
+                                            'Authorization': `Bearer ${token}`
+                                        },
+                                        body: JSON.stringify(video)
+                                    });
+                                    
+                                    if (!materialResponse.ok) {
+                                        const errorData = await materialResponse.json();
+                                        console.error('Error adding material:', errorData);
+                                        // Continue with other materials even if one fails
+                                    }
+                                } catch (materialError) {
+                                    console.error('Error adding material:', materialError);
+                                    // Continue with other materials
+                                }
+                            }
+                        }
+
+                        // Create success message
+                        const successMsg = document.createElement('div');
+                        successMsg.className = 'success-message';
+                        successMsg.style.color = '#2e7d32';
+                        successMsg.style.background = '#e8f5e9';
+                        successMsg.style.padding = '10px';
+                        successMsg.style.borderRadius = '5px';
+                        successMsg.style.marginBottom = '20px';
+                        successMsg.innerHTML = '<i class="fas fa-check-circle"></i> Course created successfully! Redirecting...';
+                        
+                        courseForm.insertBefore(successMsg, courseForm.firstChild);
+                        
+                        // Redirect after showing success message
+                        setTimeout(() => {
+                            window.location.href = 'my-courses.html';
+                        }, 2000);
+                    } catch (error) {
+                        console.error('Error creating course:', error);
+                        
+                        // Create or update error display
+                        let errorDisplay = document.getElementById('form-errors');
+                        if (!errorDisplay) {
+                            errorDisplay = document.createElement('div');
+                            errorDisplay.id = 'form-errors';
+                            errorDisplay.style.color = '#c62828';
+                            errorDisplay.style.background = '#ffebee';
+                            errorDisplay.style.padding = '10px';
+                            errorDisplay.style.borderRadius = '5px';
+                            errorDisplay.style.marginBottom = '20px';
+                            courseForm.insertBefore(errorDisplay, courseForm.firstChild);
+                        }
+                        
+                        errorDisplay.innerHTML = `<i class="fas fa-exclamation-circle"></i> ${error.message || 'Failed to create course. Please try again.'}`;
+                        errorDisplay.style.display = 'block';
+                        
+                        // Scroll to top of form to show error
+                        courseForm.scrollIntoView({ behavior: 'smooth' });
+                    }
+                });
+
+                // Handle logout
+                document.getElementById('logout-btn').addEventListener('click', () => {
+                    localStorage.removeItem('token');
+                    localStorage.removeItem('user');
+                    window.location.href = 'login.html';
+                });
+
+            } catch (error) {
+                console.error('Error loading page:', error);
+                // Replace alert with inline error
+                const container = document.querySelector('.container');
+                container.innerHTML = `
+                    <div class="error-container" style="text-align: center; padding: 50px 20px; color: #c62828; background: #ffebee; border-radius: 5px;">
+                        <i class="fas fa-exclamation-triangle" style="font-size: 48px; margin-bottom: 20px;"></i>
+                        <h2>Failed to Load Page</h2>
+                        <p>There was a problem loading the course creation page. Please try again later.</p>
+                        <button onclick="window.location.reload()" class="btn" style="background: #c62828; margin-top: 20px;">
+                            <i class="fas fa-sync"></i> Refresh Page
+                        </button>
+                        <a href="my-courses.html" class="btn" style="background: #2196f3; margin-top: 20px; margin-left: 10px;">
+                            <i class="fas fa-arrow-left"></i> Back to My Courses
+                        </a>
+                    </div>
+                `;
+            }
+        });
+    </script>
+</body>
+</html> 

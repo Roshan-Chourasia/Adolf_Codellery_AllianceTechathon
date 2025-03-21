@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+   <meta charset="UTF-8">
+   <meta http-equiv="X-UA-Compatible" content="IE=edge">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <title>Profile - Education Platform</title>
+
+   <!-- font awesome cdn link  -->
+   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+   <!-- custom css file link  -->
+   <link rel="stylesheet" href="css/style.css">
+
+</head>
+<body>
+   <script>
+      document.addEventListener("DOMContentLoaded", async () => {
+          const token = localStorage.getItem("token");
+  
+          if (!token) {
+              window.location.href = "login.html"; // Redirect to login
+              return;
+          }
+  
+          try {
+              // ✅ Fetch user data from backend
+              const response = await fetch("http://localhost:5001/api/user/profile", {
+                  method: "GET",
+                  headers: { 
+                      "Authorization": `Bearer ${token}`,
+                      "Content-Type": "application/json"
+                  }
+              });
+  
+              if (!response.ok) {
+                  const errorData = await response.json();
+                  throw new Error(errorData.msg || "Failed to load profile data");
+              }
+  
+              const data = await response.json();
+              console.log("User Data:", data);
+  
+              // ✅ Display user details
+              const nameElements = document.querySelectorAll(".name");
+              const roleElements = document.querySelectorAll(".role");
+              
+              nameElements.forEach(element => {
+                  element.textContent = data.user.name;
+              });
+              
+              roleElements.forEach(element => {
+                  element.textContent = data.user.role || "Student";
+              });
+  
+          } catch (error) {
+              console.error("Profile loading error:", error);
+              const errorDiv = document.createElement('div');
+              errorDiv.className = 'error-message';
+              errorDiv.innerHTML = `<i class="fas fa-exclamation-triangle"></i> ${error.message || "Failed to load profile."}`;
+              document.querySelector('.profile-container').prepend(errorDiv);
+              
+              setTimeout(() => {
+                localStorage.removeItem("token"); // Remove invalid token
+                window.location.href = "login.html"; // Redirect to login
+              }, 3000);
+          }
+      });
+  
+      // ✅ Logout functionality
+      document.addEventListener("DOMContentLoaded", () => {
+          const logoutBtn = document.getElementById("logout-btn");
+          if (logoutBtn) {
+              logoutBtn.addEventListener("click", () => {
+                  localStorage.removeItem("token");
+                  window.location.href = "login.html"; // Redirect to login
+              });
+          }
+      });
+  </script>
+  
+   
+
+<header class="header">
+   
+   <section class="flex">
+
+      <a href="home.html" class="logo">विद्या</a>
+
+      <form action="search.html" method="post" class="search-form">
+         <input type="text" name="search_box" required placeholder="search courses..." maxlength="100">
+         <button type="submit" class="fas fa-search"></button>
+      </form>
+
+      <div class="icons">
+         <div id="menu-btn" class="fas fa-bars"></div>
+         <div id="search-btn" class="fas fa-search"></div>
+         <div id="user-btn" class="fas fa-user"></div>
+         <div id="toggle-btn" class="fas fa-sun"></div>
+      </div>
+
+      <div class="profile">
+         <img src="images/pic-1.jpg" class="image" alt="">
+         <h3 class="name">Student</h3>
+         <p class="role">Student</p>
+         <a href="profile.html" class="btn">View Profile</a>
+         <div class="flex-btn">
+            <a href="login.html" class="option-btn">Login</a>
+            <a href="register.html" class="option-btn">Register</a>
+         </div>
+      </div>
+
+   </section>
+
+</header>   
+
+<div class="side-bar">
+
+   <div id="close-btn">
+      <i class="fas fa-times"></i>
+   </div>
+
+   <div class="profile">
+      <img src="images/pic-1.jpg" class="image" alt="">
+      <h3 class="name">Student</h3>
+      <p class="role">Student</p>
+      <a href="profile.html" class="btn">View Profile</a>
+   </div>
+   
+
+   <nav class="navbar">
+      <a href="home.html"><i class="fas fa-home"></i><span>Home</span></a>
+      <a href="about.html"><i class="fas fa-question"></i><span>About</span></a>
+      <a href="courses.html"><i class="fas fa-graduation-cap"></i><span>Courses</span></a>
+      <a href="teachers.html"><i class="fas fa-chalkboard-teacher"></i><span>Teachers</span></a>
+      <a href="contact.html"><i class="fas fa-address-book"></i><span>Contact</span></a>
+   </nav>
+
+</div>
+
+<section class="profile-section">
+   <div class="container">
+      <h1 class="heading">Profile Settings</h1>
+      <div class="profile-container">
+         <div class="profile-image">
+            <img src="images/pic-1.jpg" alt="Profile Picture">
+            <button class="btn">Change Picture</button>
+         </div>
+         <div class="profile-info">
+            <form id="update-profile-form">
+               <div class="form-group">
+                  <label for="name">Name</label>
+                  <input type="text" id="name" name="name" required>
+               </div>
+               <div class="form-group">
+                  <label for="email">Email</label>
+                  <input type="email" id="email" name="email" readonly>
+               </div>
+               <div class="form-group">
+                  <label for="role">Role</label>
+                  <input type="text" id="role" name="role" readonly>
+               </div>
+               <button type="submit" class="btn">Update Profile</button>
+            </form>
+         </div>
+      </div>
+   </div>
+</section>
+
+<footer class="footer">
+   &copy; copyright @ 2024 by <span>mr. web designer</span> | all rights reserved!
+</footer>
+
+<script>
+   document.getElementById("logout-btn").addEventListener("click", () => {
+   const confirmLogout = document.createElement('div');
+   confirmLogout.className = 'confirmation-message';
+   confirmLogout.innerHTML = `
+       <div class="confirmation-inner">
+           <p>Are you sure you want to log out?</p>
+           <div class="confirmation-buttons">
+               <button id="confirm-yes" class="btn">Yes</button>
+               <button id="confirm-no" class="btn" style="background-color: #ccc;">No</button>
+           </div>
+       </div>
+   `;
+   document.body.appendChild(confirmLogout);
+   
+   document.getElementById('confirm-yes').addEventListener('click', () => {
+       localStorage.removeItem("token");
+       document.body.removeChild(confirmLogout);
+       window.location.href = "login.html";
+   });
+   
+   document.getElementById('confirm-no').addEventListener('click', () => {
+       document.body.removeChild(confirmLogout);
+   });
+});
+
+</script>
+
+<!-- custom js file link  -->
+<script src="js/script.js"></script>
+
+   
+</body>
+</html>

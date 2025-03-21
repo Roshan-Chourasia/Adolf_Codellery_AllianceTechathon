@@ -1,0 +1,844 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Browse Courses - Education Platform</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/dashboard.css">
+    <style>
+        .courses-container {
+            padding: 2rem;
+        }
+
+        .courses-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .courses-header h1 {
+            font-size: 2rem;
+            color: var(--dark-color);
+        }
+
+        .courses-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .course-card {
+            background: var(--white);
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .course-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .course-image {
+            width: 100%;
+            height: 200px;
+            background: var(--primary-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 2rem;
+        }
+
+        .course-content {
+            padding: 1.5rem;
+        }
+
+        .course-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--dark-color);
+        }
+
+        .course-subject {
+            color: var(--primary-color);
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+
+        .course-details {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+            color: var(--light-color);
+        }
+
+        .course-description {
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            color: var(--dark-color);
+            max-height: 4.5rem;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+        }
+
+        .course-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .action-btn {
+            flex: 1;
+            padding: 0.8rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: background-color 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .enroll-btn {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .details-btn {
+            background: var(--light-bg);
+            color: var(--dark-color);
+        }
+
+        .action-btn:hover {
+            opacity: 0.9;
+        }
+
+        .no-courses {
+            text-align: center;
+            padding: 3rem;
+            background: var(--white);
+            border-radius: 10px;
+            color: var(--light-color);
+        }
+
+        .no-courses i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            color: var(--primary-color);
+        }
+
+        .no-courses h3 {
+            color: var(--dark-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .courses-filters {
+            background: var(--white);
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .search-box {
+            position: relative;
+            margin-bottom: 1rem;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 0.8rem 1rem 0.8rem 2.5rem;
+            border: 1px solid var(--light-bg);
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+
+        .search-box i {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--light-color);
+        }
+
+        .filter-options {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-options select {
+            padding: 0.8rem;
+            border: 1px solid var(--light-bg);
+            border-radius: 5px;
+            font-size: 1rem;
+            min-width: 150px;
+        }
+
+        .course-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .course-modal.active {
+            display: flex;
+        }
+
+        .course-modal-content {
+            background: var(--white);
+            width: 90%;
+            max-width: 800px;
+            max-height: 90vh;
+            border-radius: 10px;
+            overflow-y: auto;
+            padding: 2rem;
+        }
+
+        .course-modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            border-bottom: 1px solid var(--light-bg);
+            padding-bottom: 1rem;
+        }
+
+        .course-modal-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--dark-color);
+        }
+
+        .course-modal-close {
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--light-color);
+        }
+
+        .course-modal-details {
+            margin-bottom: 1.5rem;
+        }
+
+        .course-modal-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .course-modal-info-item {
+            padding: 1rem;
+            background: var(--light-bg);
+            border-radius: 5px;
+            text-align: center;
+        }
+
+        .course-modal-info-item i {
+            display: block;
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+            color: var(--primary-color);
+        }
+
+        .course-modal-actions {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .course-modal-btn {
+            padding: 0.8rem 2rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.3s ease;
+        }
+
+        .course-modal-btn.enroll {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .course-modal-btn.cancel {
+            background: var(--light-bg);
+            color: var(--dark-color);
+        }
+
+        @media (max-width: 768px) {
+            .courses-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .filter-options {
+                flex-direction: column;
+            }
+            
+            .filter-options select {
+                width: 100%;
+            }
+        }
+
+        /* Dark mode specific styles */
+        body.dark .courses-container {
+            color: #fff;
+        }
+
+        body.dark .filter-section {
+            background: #3B5249;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+        }
+
+        body.dark .search-box input,
+        body.dark .filter-options select {
+            background: #2D3A3A;
+            color: #fff;
+            border-color: #557B83;
+        }
+
+        body.dark .search-box i {
+            color: #A4B494;
+        }
+
+        body.dark .course-grid .course-card {
+            background: #344E41;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+        }
+
+        body.dark .course-content {
+            color: #fff;
+        }
+
+        body.dark .course-info {
+            color: #A4B494;
+        }
+
+        body.dark .modal-content {
+            background: #3B5249;
+            color: #fff;
+        }
+
+        body.dark .modal-header,
+        body.dark .modal-footer {
+            border-color: #557B83;
+        }
+
+        body.dark .modal-close {
+            color: #fff;
+        }
+    </style>
+</head>
+<body>
+    <!-- Dark Mode Toggle Button -->
+    <div id="dark-mode-floating-toggle" style="position: fixed; bottom: 20px; right: 20px; z-index: 9999; background: #3B5249; color: white; width: 50px; height: 50px; border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.2);">
+        <i class="fas fa-moon" style="font-size: 20px;"></i>
+    </div>
+
+    <header class="header">
+        <section class="flex">
+            <a href="#" class="logo">विद्या</a>
+            <div class="icons">
+                <div id="menu-btn" class="fas fa-bars"></div>
+                <div id="search-btn" class="fas fa-search"></div>
+                <div id="user-btn" class="fas fa-user"></div>
+                <div id="header-logout-btn" class="fas fa-sign-out-alt" style="cursor: pointer; margin-left: 15px;" title="Logout"></div>
+            </div>
+            <div class="profile">
+                <img src="images/pic-1.jpg" class="image" alt="">
+                <p class="name">Loading...</p>
+                <p class="role">Loading...</p>
+            </div>
+        </section>
+    </header>
+
+    <div class="side-bar">
+        <div class="close-side-bar">
+            <i class="fas fa-times"></i>
+        </div>
+        <div class="profile">
+            <img src="images/pic-1.jpg" class="image" alt="">
+            <p class="name">Loading...</p>
+            <p class="role">Loading...</p>
+        </div>
+        <nav class="navbar" id="sidebarNav">
+            <!-- Will be populated dynamically based on user role -->
+        </nav>
+    </div>
+
+    <section class="dashboard">
+        <div class="courses-container">
+            <div class="courses-header">
+                <h1>Browse Available Courses</h1>
+            </div>
+
+            <div class="courses-filters">
+                <div class="search-box">
+                    <input type="text" id="courseSearch" placeholder="Search courses...">
+                    <i class="fas fa-search"></i>
+                </div>
+                <div class="filter-options">
+                    <select id="subjectFilter">
+                        <option value="">All Subjects</option>
+                        <option value="Mathematics">Mathematics</option>
+                        <option value="Physics">Physics</option>
+                        <option value="Chemistry">Chemistry</option>
+                        <option value="Biology">Biology</option>
+                        <option value="Computer Science">Computer Science</option>
+                        <option value="English">English</option>
+                        <option value="History">History</option>
+                        <option value="Geography">Geography</option>
+                    </select>
+                    <select id="levelFilter">
+                        <option value="">All Levels</option>
+                        <option value="beginner">Beginner</option>
+                        <option value="intermediate">Intermediate</option>
+                        <option value="advanced">Advanced</option>
+                    </select>
+                    <select id="sortFilter">
+                        <option value="newest">Newest First</option>
+                        <option value="oldest">Oldest First</option>
+                        <option value="price-high">Price: High to Low</option>
+                        <option value="price-low">Price: Low to High</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="courses-grid" id="coursesGrid">
+                <!-- Courses will be dynamically loaded here -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Course Details Modal -->
+    <div class="course-modal" id="courseModal">
+        <div class="course-modal-content">
+            <div class="course-modal-header">
+                <h2 class="course-modal-title" id="modalTitle">Course Title</h2>
+                <div class="course-modal-close" onclick="closeCourseModal()">
+                    <i class="fas fa-times"></i>
+                </div>
+            </div>
+            <div class="course-modal-body" id="modalBody">
+                <!-- Course details will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <script src="js/script.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            try {
+                const token = localStorage.getItem('token');
+                if (!token) {
+                    window.location.href = 'login.html';
+                    return;
+                }
+
+                // Fetch user profile
+                const profileResponse = await fetch('http://localhost:5001/api/user/profile', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (!profileResponse.ok) {
+                    throw new Error('Failed to fetch profile');
+                }
+
+                const profileData = await profileResponse.json();
+                const user = profileData.user;
+
+                // Update profile information
+                const nameElements = document.querySelectorAll('.name');
+                nameElements.forEach(element => {
+                    element.textContent = user.name;
+                });
+                
+                const roleElements = document.querySelectorAll('.role');
+                roleElements.forEach(element => {
+                    element.textContent = user.role.charAt(0).toUpperCase() + user.role.slice(1);
+                });
+                
+                // Update sidebar based on user role
+                const sidebarNav = document.getElementById('sidebarNav');
+                
+                // We expect only students to access this page
+                sidebarNav.innerHTML = `
+                    <a href="student-dashboard.html"><i class="fas fa-home"></i><span>Home</span></a>
+                    <a href="my-courses.html"><i class="fas fa-book"></i><span>My Courses</span></a>
+                    <a href="browse-courses.html" class="active"><i class="fas fa-search"></i><span>Browse Courses</span></a>
+                    <a href="#"><i class="fas fa-calendar"></i><span>My Schedule</span></a>
+                    <a href="#"><i class="fas fa-certificate"></i><span>My Certificates</span></a>
+                    <a href="#"><i class="fas fa-cog"></i><span>Settings</span></a>
+                    <a href="#" id="logout-btn"><i class="fas fa-sign-out-alt"></i><span>Logout</span></a>
+                `;
+                
+                // Re-attach logout event listener
+                document.getElementById('logout-btn').addEventListener('click', () => {
+                    localStorage.removeItem('token');
+                    localStorage.removeItem('user');
+                    window.location.href = 'login.html';
+                });
+                
+                // Also attach to header logout button
+                document.getElementById('header-logout-btn').addEventListener('click', () => {
+                    localStorage.removeItem('token');
+                    localStorage.removeItem('user');
+                    window.location.href = 'login.html';
+                });
+
+                // Fetch all available courses
+                console.log('Fetching available courses...');
+                const coursesResponse = await fetch('http://localhost:5001/api/courses', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                console.log('Courses response status:', coursesResponse.status);
+                
+                if (!coursesResponse.ok) {
+                    const errorData = await coursesResponse.json();
+                    console.error('Server error:', errorData);
+                    throw new Error(errorData.msg || 'Failed to fetch courses');
+                }
+
+                const courses = await coursesResponse.json();
+                console.log('Fetched courses:', courses.length);
+
+                // Store all courses for filtering
+                let allCourses = courses;
+                
+                // Initial render
+                renderCourses(courses);
+
+                // Add event listeners for filters
+                document.getElementById('courseSearch').addEventListener('input', filterCourses);
+                document.getElementById('subjectFilter').addEventListener('change', filterCourses);
+                document.getElementById('levelFilter').addEventListener('change', filterCourses);
+                document.getElementById('sortFilter').addEventListener('change', filterCourses);
+
+                function filterCourses() {
+                    const searchTerm = document.getElementById('courseSearch').value.toLowerCase();
+                    const subject = document.getElementById('subjectFilter').value;
+                    const level = document.getElementById('levelFilter').value;
+                    const sortBy = document.getElementById('sortFilter').value;
+
+                    let filteredCourses = allCourses.filter(course => {
+                        const matchesSearch = course.title.toLowerCase().includes(searchTerm) ||
+                                            course.description.toLowerCase().includes(searchTerm);
+                        const matchesSubject = !subject || course.subject === subject;
+                        const matchesLevel = !level || course.level.toLowerCase() === level.toLowerCase();
+                        return matchesSearch && matchesSubject && matchesLevel;
+                    });
+
+                    // Sort courses
+                    filteredCourses.sort((a, b) => {
+                        switch (sortBy) {
+                            case 'newest':
+                                return new Date(b.createdAt) - new Date(a.createdAt);
+                            case 'oldest':
+                                return new Date(a.createdAt) - new Date(b.createdAt);
+                            case 'price-high':
+                                return b.price - a.price;
+                            case 'price-low':
+                                return a.price - b.price;
+                            default:
+                                return 0;
+                        }
+                    });
+
+                    renderCourses(filteredCourses);
+                }
+
+                function renderCourses(courses) {
+                    const coursesGrid = document.getElementById('coursesGrid');
+                    
+                    if (!Array.isArray(courses) || courses.length === 0) {
+                        coursesGrid.innerHTML = `
+                            <div class="no-courses">
+                                <i class="fas fa-search"></i>
+                                <h3>No Courses Found</h3>
+                                <p>Try adjusting your search or filters</p>
+                            </div>
+                        `;
+                        return;
+                    }
+
+                    coursesGrid.innerHTML = courses.map(course => `
+                        <div class="course-card">
+                            <div class="course-image">
+                                <i class="fas fa-graduation-cap"></i>
+                            </div>
+                            <div class="course-content">
+                                <h3 class="course-title">${course.title || 'Untitled Course'}</h3>
+                                <div class="course-subject">${course.subject || 'No Subject'} • ${course.level || 'No Level'}</div>
+                                <div class="course-details">
+                                    <span><i class="fas fa-clock"></i> ${course.duration || 0} min</span>
+                                    <span><i class="fas fa-dollar-sign"></i> ${course.price || 0}</span>
+                                </div>
+                                <div class="course-description">
+                                    ${course.description || 'No description available for this course.'}
+                                </div>
+                                <div class="course-actions">
+                                    <button class="action-btn details-btn" onclick="viewCourseDetails('${course._id}')">
+                                        <i class="fas fa-info-circle"></i> Details
+                                    </button>
+                                    <button class="action-btn enroll-btn" onclick="enrollInCourse('${course._id}')">
+                                        <i class="fas fa-graduation-cap"></i> Enroll
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    `).join('');
+                }
+
+            } catch (error) {
+                console.error('Error loading courses:', error);
+                
+                // Display user-friendly error without alert
+                const coursesGrid = document.getElementById('coursesGrid');
+                coursesGrid.innerHTML = `
+                    <div class="no-courses" style="background: #ffebee; color: #c62828;">
+                        <i class="fas fa-exclamation-circle"></i>
+                        <h3>Could not load courses</h3>
+                        <p>There was a problem loading the course catalog. Please try refreshing the page.</p>
+                    </div>
+                `;
+            }
+        });
+
+        // View course details
+        async function viewCourseDetails(courseId) {
+            try {
+                const token = localStorage.getItem('token');
+                const response = await fetch(`http://localhost:5001/api/courses/${courseId}`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to fetch course details');
+                }
+
+                const course = await response.json();
+                
+                // Populate modal with course details
+                document.getElementById('modalTitle').textContent = course.title;
+                
+                const modalBody = document.getElementById('modalBody');
+                modalBody.innerHTML = `
+                    <div class="course-modal-info">
+                        <div class="course-modal-info-item">
+                            <i class="fas fa-book"></i>
+                            <strong>Subject</strong>
+                            <p>${course.subject || 'Not specified'}</p>
+                        </div>
+                        <div class="course-modal-info-item">
+                            <i class="fas fa-signal"></i>
+                            <strong>Level</strong>
+                            <p>${course.level || 'Not specified'}</p>
+                        </div>
+                        <div class="course-modal-info-item">
+                            <i class="fas fa-clock"></i>
+                            <strong>Duration</strong>
+                            <p>${course.duration || 0} minutes</p>
+                        </div>
+                        <div class="course-modal-info-item">
+                            <i class="fas fa-dollar-sign"></i>
+                            <strong>Price</strong>
+                            <p>$${course.price || 0}</p>
+                        </div>
+                    </div>
+                    
+                    <div class="course-modal-details">
+                        <h3>Course Description</h3>
+                        <p>${course.description || 'No description available.'}</p>
+                    </div>
+                    
+                    <div class="course-modal-materials">
+                        <h3>Course Materials (${course.materials ? course.materials.length : 0})</h3>
+                        ${course.materials && course.materials.length > 0 ? `
+                            <ul style="list-style: none; padding-left: 0;">
+                                ${course.materials.map(material => `
+                                    <li style="padding: 0.8rem; background: var(--light-bg); margin-bottom: 0.5rem; border-radius: 5px;">
+                                        <i class="fas fa-video"></i> ${material.title || 'Untitled Video'}
+                                    </li>
+                                `).join('')}
+                            </ul>
+                        ` : `
+                            <p>No materials available for this course yet.</p>
+                        `}
+                    </div>
+                    
+                    <div class="course-modal-actions">
+                        <button class="course-modal-btn enroll" onclick="enrollInCourse('${course._id}')">
+                            <i class="fas fa-graduation-cap"></i> Enroll Now
+                        </button>
+                        <button class="course-modal-btn cancel" onclick="closeCourseModal()">
+                            Cancel
+                        </button>
+                    </div>
+                `;
+                
+                // Show modal
+                document.getElementById('courseModal').classList.add('active');
+                
+            } catch (error) {
+                console.error('Error viewing course details:', error);
+                
+                // Show error in modal instead of alert
+                document.getElementById('modalTitle').textContent = 'Error';
+                document.getElementById('modalBody').innerHTML = `
+                    <div style="background: #ffebee; color: #c62828; padding: 1rem; border-radius: 5px; text-align: center; margin-bottom: 1rem;">
+                        <i class="fas fa-exclamation-circle" style="font-size: 2rem; margin-bottom: 0.5rem;"></i>
+                        <h3>Could not load course details</h3>
+                        <p>There was a problem loading this course's information. Please try again later.</p>
+                    </div>
+                    <div class="course-modal-actions">
+                        <button class="course-modal-btn cancel" onclick="closeCourseModal()">
+                            Close
+                        </button>
+                    </div>
+                `;
+                document.getElementById('courseModal').classList.add('active');
+            }
+        }
+        
+        // Close course modal
+        function closeCourseModal() {
+            document.getElementById('courseModal').classList.remove('active');
+        }
+        
+        // Enroll in course
+        async function enrollInCourse(courseId) {
+            try {
+                const token = localStorage.getItem('token');
+                
+                if (!confirm('Are you sure you want to enroll in this course?')) {
+                    return;
+                }
+                
+                console.log('Attempting to enroll in course ID:', courseId);
+                
+                const response = await fetch(`http://localhost:5001/api/courses/${courseId}/enroll`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                console.log('Enrollment response status:', response.status);
+                const data = await response.json();
+                console.log('Enrollment response data:', data);
+                
+                if (!response.ok) {
+                    throw new Error(data.msg || 'Failed to enroll in course');
+                }
+                
+                // Instead of alert, redirect with a success parameter
+                window.location.href = 'my-courses.html?enrolled=success';
+                
+            } catch (error) {
+                console.error('Error enrolling in course:', error);
+                
+                // Check if error is because already enrolled
+                if (error.message.includes('Already enrolled')) {
+                    // Redirect to my courses without alert
+                    window.location.href = 'my-courses.html?enrolled=already';
+                } else {
+                    // Show error modal instead of alert
+                    document.getElementById('modalTitle').textContent = 'Enrollment Error';
+                    document.getElementById('modalBody').innerHTML = `
+                        <div style="background: #ffebee; color: #c62828; padding: 1rem; border-radius: 5px; text-align: center; margin-bottom: 1rem;">
+                            <i class="fas fa-exclamation-circle" style="font-size: 2rem; margin-bottom: 0.5rem;"></i>
+                            <h3>Enrollment Failed</h3>
+                            <p>${error.message || 'There was a problem enrolling in this course. Please try again later.'}</p>
+                        </div>
+                        <div class="course-modal-actions">
+                            <button class="course-modal-btn cancel" onclick="closeCourseModal()">
+                                Close
+                            </button>
+                        </div>
+                    `;
+                    document.getElementById('courseModal').classList.add('active');
+                }
+            }
+        }
+
+        // Dark Mode Manual Toggle
+        document.getElementById('dark-mode-floating-toggle').addEventListener('click', function() {
+            // Toggle dark mode class
+            document.body.classList.toggle('dark');
+            
+            // Update button icon
+            const icon = this.querySelector('i');
+            if (document.body.classList.contains('dark')) {
+                localStorage.setItem('darkMode', 'enabled');
+                icon.classList.remove('fa-moon');
+                icon.classList.add('fa-sun');
+            } else {
+                localStorage.setItem('darkMode', 'disabled');
+                icon.classList.remove('fa-sun');
+                icon.classList.add('fa-moon');
+            }
+            
+            // Update the regular toggle button as well
+            const headerToggleBtn = document.getElementById('toggle-btn');
+            if (headerToggleBtn) {
+                if (document.body.classList.contains('dark')) {
+                    headerToggleBtn.classList.remove('fa-moon');
+                    headerToggleBtn.classList.add('fa-sun');
+                } else {
+                    headerToggleBtn.classList.remove('fa-sun');
+                    headerToggleBtn.classList.add('fa-moon');
+                }
+            }
+        });
+        
+        // Initialize button state based on current mode
+        document.addEventListener('DOMContentLoaded', function() {
+            const darkModeEnabled = document.body.classList.contains('dark') || localStorage.getItem('darkMode') === 'enabled';
+            
+            // Apply dark mode if enabled in localStorage but not yet applied
+            if (localStorage.getItem('darkMode') === 'enabled' && !document.body.classList.contains('dark')) {
+                document.body.classList.add('dark');
+            }
+            
+            const icon = document.getElementById('dark-mode-floating-toggle').querySelector('i');
+            
+            if (darkModeEnabled) {
+                icon.classList.remove('fa-moon');
+                icon.classList.add('fa-sun');
+            } else {
+                icon.classList.remove('fa-sun');
+                icon.classList.add('fa-moon');
+            }
+        });
+    </script>
+</body>
+</html> 

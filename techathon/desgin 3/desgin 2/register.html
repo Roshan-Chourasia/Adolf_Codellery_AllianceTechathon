@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+   <meta charset="UTF-8">
+   <meta http-equiv="X-UA-Compatible" content="IE=edge">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <title>register</title>
+
+   <!-- font awesome cdn link  -->
+   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.2/css/all.min.css">
+
+   <!-- custom css file link  -->
+   <link rel="stylesheet" href="css/style.css">
+
+   <style>
+       /* Dark mode specific styles */
+       /* Removing the inline styles as they're now handled in the global CSS */
+   </style>
+
+</head>
+<body>
+
+<header class="header">
+   
+   <section class="flex">
+
+      <a href="home.html" class="logo">विद्या</a>
+
+      <form action="search.html" method="post" class="search-form">
+         <input type="text" name="search_box" required placeholder="search courses..." maxlength="100">
+         <button type="submit" class="fas fa-search"></button>
+      </form>
+
+      <div class="icons">
+         <div id="menu-btn" class="fas fa-bars"></div>
+         <div id="search-btn" class="fas fa-search"></div>
+         <div id="user-btn" class="fas fa-user"></div>
+         <div id="toggle-btn" class="fas fa-sun"></div>
+      </div>
+
+      <div class="profile">
+         <img src="images/pic-1.jpg" class="image" alt="">
+         <h3 class="name">shaikh anas</h3>
+         <p class="role">studen</p>
+         <a href="profile.html" class="btn">view profile</a>
+         <div class="flex-btn">
+            <a href="login.html" class="option-btn">login</a>
+            <a href="register.html" class="option-btn">register</a>
+         </div>
+      </div>
+
+   </section>
+
+</header>   
+
+<div class="side-bar">
+
+   <div id="close-btn">
+      <i class="fas fa-times"></i>
+   </div>
+
+   <div class="profile">
+      <img src="images/pic-1.jpg" class="image" alt="">
+      <h3 class="name">shaikh anas</h3>
+      <p class="role">studen</p>
+      <a href="profile.html" class="btn">view profile</a>
+   </div>
+
+   <nav class="navbar">
+      <a href="home.html"><i class="fas fa-home"></i><span>home</span></a>
+      <a href="about.html"><i class="fas fa-question"></i><span>about</span></a>
+      <a href="courses.html"><i class="fas fa-graduation-cap"></i><span>courses</span></a>
+      <a href="teachers.html"><i class="fas fa-chalkboard-user"></i><span>teachers</span></a>
+      <a href="contact.html"><i class="fas fa-headset"></i><span>contact us</span></a>
+   </nav>
+
+</div>
+
+<section class="form-container">
+   <h2 style="font-size: 3rem; margin-bottom: 2rem; text-align: center; color: var(--main-color);">Join Our Community</h2>
+   
+   <form id="register-form" method="post">
+      <h3>Create Account</h3>
+      <div id="error-message" style="display: none;"></div>
+      
+      <div class="form-group">
+         <label for="name">Your Name <span>*</span></label>
+         <input type="text" id="name" placeholder="Enter your name" required class="box">
+      </div>
+   
+      <div class="form-group">
+         <label for="email">Your Email <span>*</span></label>
+         <input type="email" id="email" placeholder="Enter your email" required class="box">
+      </div>
+   
+      <div class="form-group">
+         <label for="password">Your Password <span>*</span></label>
+         <input type="password" id="password" placeholder="Enter your password" required class="box">
+      </div>
+   
+      <div class="form-group">
+         <label for="confirm-password">Confirm Password <span>*</span></label>
+         <input type="password" id="confirm-password" placeholder="Confirm your password" required class="box">
+      </div>
+   
+      <div class="form-group">
+         <label>Register As <span>*</span></label>
+         <div class="role-selection">
+            <label>
+               <input type="radio" name="role" id="role-student" value="student" checked> Student
+            </label>
+            <label>
+               <input type="radio" name="role" id="role-tutor" value="tutor"> Tutor
+            </label>
+         </div>
+         <p style="font-size: 1.4rem; margin-top: 0.5rem; color: var(--light-color);">
+            Tutors should use the <a href="tutor-register.html">Tutor Registration</a> form
+         </p>
+      </div>
+
+      <input type="submit" value="Register Now" class="btn" style="width: 100%; margin-top: 1rem;">
+   </form>
+   <p>Already have an account? <a href="login.html">Login here</a></p>
+</section>   
+   
+<!-- custom js file link  -->
+<script src="js/script.js"></script>
+
+<script>
+   document.getElementById('register-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const name = document.getElementById('name').value;
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+      const confirmPassword = document.getElementById('confirm-password').value;
+      const errorMessage = document.getElementById('error-message');
+      
+      // Get role from the selected radio button
+      const role = document.querySelector('input[name="role"]:checked').value;
+      
+      if (password !== confirmPassword) {
+         errorMessage.style.display = 'block';
+         errorMessage.innerHTML = '<i class="fas fa-exclamation-circle"></i> Passwords do not match';
+         return;
+      }
+      
+      console.log('Submitting registration with role:', role);
+
+      try {
+         const response = await fetch('http://localhost:5001/api/auth/register', {
+            method: 'POST',
+            headers: {
+               'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ name, email, password, role })
+         });
+         
+         const data = await response.json();
+         
+         if (response.ok) {
+            // Store token and user data
+            localStorage.setItem('token', data.token);
+            localStorage.setItem('user', JSON.stringify(data.user));
+            
+            // Show success message before redirect
+            errorMessage.style.display = 'block';
+            errorMessage.style.color = 'var(--tertiary-color)';
+            errorMessage.style.background = 'var(--light-bg)';
+            errorMessage.innerHTML = '<i class="fas fa-check-circle"></i> Registration successful! Redirecting...';
+            
+            // Redirect based on role after a short delay
+            setTimeout(() => {
+               if (role === 'student') {
+                  window.location.href = 'student-dashboard.html';
+               } else {
+                  window.location.href = 'tutor-dashboard.html';
+               }
+            }, 1500);
+         } else {
+            errorMessage.style.display = 'block';
+            errorMessage.innerHTML = `<i class="fas fa-exclamation-circle"></i> ${data.msg || 'Registration failed'}`;
+         }
+      } catch (error) {
+         console.error('Registration error:', error);
+         errorMessage.style.display = 'block';
+         errorMessage.innerHTML = '<i class="fas fa-exclamation-circle"></i> Registration failed. Please check your internet connection and try again.';
+      }
+   });
+   
+   // Redirect to tutor registration if tutor option is selected
+   document.getElementById('role-tutor').addEventListener('change', function() {
+      if (this.checked) {
+         // Create a modal for tutor registration confirmation
+         const modal = document.createElement('div');
+         modal.style.position = 'fixed';
+         modal.style.top = '0';
+         modal.style.left = '0';
+         modal.style.width = '100%';
+         modal.style.height = '100%';
+         modal.style.backgroundColor = 'rgba(0,0,0,0.7)';
+         modal.style.display = 'flex';
+         modal.style.justifyContent = 'center';
+         modal.style.alignItems = 'center';
+         modal.style.zIndex = '1000';
+         
+         const modalContent = document.createElement('div');
+         modalContent.style.backgroundColor = 'white';
+         modalContent.style.padding = '20px';
+         modalContent.style.borderRadius = '5px';
+         modalContent.style.width = '80%';
+         modalContent.style.maxWidth = '500px';
+         modalContent.style.textAlign = 'center';
+         
+         modalContent.innerHTML = `
+            <h3 style="margin-bottom: 15px;">Tutor Registration</h3>
+            <p style="margin-bottom: 20px;">The tutor registration requires additional information. Would you like to go to the tutor registration form?</p>
+            <button id="yes-btn" class="btn" style="background: #2196f3; margin-right: 10px;">Yes, Continue</button>
+            <button id="no-btn" class="btn" style="background: #757575;">No, Stay Here</button>
+         `;
+         
+         modal.appendChild(modalContent);
+         document.body.appendChild(modal);
+         
+         // Handle modal button clicks
+         document.getElementById('yes-btn').addEventListener('click', function() {
+            window.location.href = 'tutor-register.html';
+         });
+         
+         document.getElementById('no-btn').addEventListener('click', function() {
+            document.body.removeChild(modal);
+            // Reset to student role
+            document.getElementById('role-student').checked = true;
+         });
+      }
+   });
+</script>
+   
+</body>
+</html>

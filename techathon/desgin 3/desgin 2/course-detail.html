@@ -1,0 +1,808 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Course Details - Education Platform</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .course-detail-container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 1.5rem;
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .course-header {
+            display: flex;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .course-image {
+            flex: 0 0 40%;
+            border-radius: 10px;
+            overflow: hidden;
+            height: 300px;
+            background: #f5f5f5;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .course-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .course-image i {
+            font-size: 5rem;
+            color: #ddd;
+        }
+
+        .course-info {
+            flex: 1;
+        }
+
+        .course-title {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            color: var(--dark-color);
+        }
+
+        .course-meta {
+            display: flex;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+            color: var(--light-color);
+        }
+
+        .course-meta-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .course-description {
+            margin-bottom: 1.5rem;
+            line-height: 1.6;
+        }
+
+        .course-price {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary-color);
+            margin-bottom: 1.5rem;
+        }
+
+        .course-actions {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .enroll-btn {
+            padding: 0.8rem 2rem;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .enroll-btn:hover {
+            background: var(--primary-dark);
+        }
+
+        .course-content {
+            margin-top: 3rem;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            color: var(--dark-color);
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid #eee;
+        }
+
+        .materials-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .material-item {
+            padding: 1rem;
+            border-bottom: 1px solid #f5f5f5;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .material-item:last-child {
+            border-bottom: none;
+        }
+
+        .material-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .material-icon {
+            font-size: 1.2rem;
+            color: var(--primary-color);
+            width: 30px;
+            height: 30px;
+            background: #f5f5f5;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .material-details h4 {
+            margin-bottom: 0.3rem;
+            color: var(--dark-color);
+        }
+
+        .material-duration {
+            color: var(--light-color);
+            font-size: 0.9rem;
+        }
+
+        .preview-btn {
+            padding: 0.5rem 1rem;
+            background: #f5f5f5;
+            color: var(--dark-color);
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: background 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .preview-btn:hover {
+            background: #e9e9e9;
+        }
+
+        .tutor-section {
+            margin-top: 3rem;
+            background: #f9f9f9;
+            padding: 1.5rem;
+            border-radius: 10px;
+        }
+
+        .tutor-info {
+            display: flex;
+            gap: 1.5rem;
+        }
+
+        .tutor-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            overflow: hidden;
+        }
+
+        .tutor-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .tutor-details h3 {
+            margin-bottom: 0.5rem;
+            color: var(--dark-color);
+        }
+
+        .tutor-bio {
+            margin-top: 1rem;
+            line-height: 1.6;
+        }
+
+        .video-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .video-modal-content {
+            background: white;
+            width: 90%;
+            max-width: 900px;
+            border-radius: 10px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .close-video-modal {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            color: white;
+            background: rgba(0, 0, 0, 0.5);
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 10;
+        }
+
+        .video-title {
+            padding: 1rem;
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .video-player {
+            width: 100%;
+            aspect-ratio: 16/9;
+        }
+
+        /* Enrollment success message */
+        .enrollment-success {
+            display: none;
+            background: #e7f7ed;
+            color: #2a7f52;
+            padding: 1rem;
+            border-radius: 5px;
+            margin-bottom: 1.5rem;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .enrollment-success i {
+            font-size: 1.2rem;
+        }
+
+        /* Already enrolled message */
+        .already-enrolled {
+            display: none;
+            background: #f7f7e7;
+            color: #7f752a;
+            padding: 1rem;
+            border-radius: 5px;
+            margin-bottom: 1.5rem;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .already-enrolled i {
+            font-size: 1.2rem;
+        }
+
+        /* Continue learning button for enrolled students */
+        .continue-btn {
+            padding: 0.8rem 2rem;
+            background: #4caf50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .continue-btn:hover {
+            background: #3e8e41;
+        }
+
+        /* Dark mode specific styles */
+        body.dark .course-detail-container {
+            color: #fff;
+        }
+
+        body.dark .course-header {
+            background: #3B5249;
+        }
+
+        body.dark .course-info h1,
+        body.dark .course-info p {
+            color: #fff;
+        }
+
+        body.dark .course-info .instructor span {
+            color: #A4B494;
+        }
+
+        body.dark .enroll-section {
+            background: #344E41;
+            border: 1px solid #557B83;
+        }
+
+        body.dark .section-title {
+            color: #fff;
+            border-bottom: 1px solid #557B83;
+        }
+
+        body.dark .course-description,
+        body.dark .materials-section,
+        body.dark .reviews-section {
+            background: #3B5249;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+        }
+
+        body.dark .material-item {
+            background: #344E41;
+            border: 1px solid #557B83;
+        }
+
+        body.dark .material-item h3,
+        body.dark .material-item p {
+            color: #fff;
+        }
+
+        body.dark .review-item {
+            background: #344E41;
+            border: 1px solid #557B83;
+        }
+
+        body.dark .review-header h4,
+        body.dark .review-content p {
+            color: #fff;
+        }
+
+        body.dark .enrollment-error {
+            background: #483838;
+            border-left: 4px solid #ff6b6b;
+            color: #ff9999;
+        }
+    </style>
+</head>
+<body>
+    <!-- Dark Mode Toggle Button -->
+    <div id="dark-mode-floating-toggle" style="position: fixed; bottom: 20px; right: 20px; z-index: 9999; background: #3B5249; color: white; width: 50px; height: 50px; border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.2);">
+        <i class="fas fa-moon" style="font-size: 20px;"></i>
+    </div>
+
+    <header class="header">
+        <section class="flex">
+            <a href="#" class="logo">विद्या</a>
+            <div class="icons">
+                <div id="menu-btn" class="fas fa-bars"></div>
+                <div id="search-btn" class="fas fa-search"></div>
+                <div id="user-btn" class="fas fa-user"></div>
+                <div id="header-logout-btn" class="fas fa-sign-out-alt" style="cursor: pointer; margin-left: 15px;" title="Logout"></div>
+            </div>
+            <div class="profile">
+                <img src="images/pic-1.jpg" class="image" alt="">
+                <p class="name">Loading...</p>
+                <p class="role">Student</p>
+            </div>
+        </section>
+    </header>
+
+    <div class="side-bar">
+        <div class="close-side-bar">
+            <i class="fas fa-times"></i>
+        </div>
+        <div class="profile">
+            <img src="images/pic-1.jpg" class="image" alt="">
+            <p class="name">Loading...</p>
+            <p class="role">Student</p>
+        </div>
+        <nav class="navbar">
+            <a href="home.html"><i class="fas fa-home"></i><span>Home</span></a>
+            <a href="student-dashboard.html"><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></a>
+            <a href="courses.html" class="active"><i class="fas fa-graduation-cap"></i><span>All Courses</span></a>
+            <a href="my-courses.html"><i class="fas fa-book"></i><span>My Courses</span></a>
+            <a href="#"><i class="fas fa-chart-line"></i><span>My Progress</span></a>
+            <a href="#" id="logout-btn"><i class="fas fa-sign-out-alt"></i><span>Logout</span></a>
+        </nav>
+    </div>
+
+    <div class="course-detail-container">
+        <div class="enrollment-success">
+            <i class="fas fa-check-circle"></i> Successfully enrolled! You can now access all course materials.
+        </div>
+        
+        <div class="already-enrolled">
+            <i class="fas fa-info-circle"></i> You are already enrolled in this course.
+        </div>
+        
+        <div class="course-header">
+            <div class="course-image">
+                <i class="fas fa-graduation-cap"></i>
+            </div>
+            <div class="course-info">
+                <h1 class="course-title" id="courseTitle">Loading course...</h1>
+                <div class="course-meta">
+                    <div class="course-meta-item">
+                        <i class="fas fa-bookmark"></i>
+                        <span id="courseSubject">Subject</span>
+                    </div>
+                    <div class="course-meta-item">
+                        <i class="fas fa-signal"></i>
+                        <span id="courseLevel">Level</span>
+                    </div>
+                    <div class="course-meta-item">
+                        <i class="fas fa-clock"></i>
+                        <span id="courseDuration">Duration</span>
+                    </div>
+                    <div class="course-meta-item">
+                        <i class="fas fa-users"></i>
+                        <span id="enrolledCount">0 students</span>
+                    </div>
+                </div>
+                <div class="course-description" id="courseDescription">
+                    Loading course description...
+                </div>
+                <div class="course-price" id="coursePrice">$0</div>
+                <div class="course-actions">
+                    <button id="enrollButton" class="enroll-btn">
+                        <i class="fas fa-user-plus"></i> Enroll Now
+                    </button>
+                    <button id="continueButton" class="continue-btn" style="display: none;">
+                        <i class="fas fa-play"></i> Continue Learning
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="course-content">
+            <h2 class="section-title">Course Content</h2>
+            <ul class="materials-list" id="materialsList">
+                <!-- Materials will be loaded dynamically -->
+                <li class="material-item">
+                    <div class="material-info">
+                        <div class="material-icon">
+                            <i class="fas fa-spinner fa-spin"></i>
+                        </div>
+                        <div class="material-details">
+                            <h4>Loading materials...</h4>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+        </div>
+
+        <div class="tutor-section">
+            <h2 class="section-title">About the Tutor</h2>
+            <div class="tutor-info">
+                <div class="tutor-avatar">
+                    <img src="images/pic-1.jpg" alt="Tutor" id="tutorImage">
+                </div>
+                <div class="tutor-details">
+                    <h3 id="tutorName">Loading tutor info...</h3>
+                    <p id="tutorEmail">Email: loading...</p>
+                </div>
+            </div>
+            <div class="tutor-bio" id="tutorBio">
+                Loading tutor bio...
+            </div>
+        </div>
+    </div>
+
+    <div class="video-modal" id="videoModal">
+        <div class="video-modal-content">
+            <div class="close-video-modal" onclick="closeVideoModal()">
+                <i class="fas fa-times"></i>
+            </div>
+            <div class="video-title" id="videoTitle"></div>
+            <div id="videoPlayerContainer"></div>
+        </div>
+    </div>
+
+    <script src="js/script.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/videoPlayer.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            try {
+                // Check authentication
+                const token = localStorage.getItem('token');
+                if (!token) {
+                    window.location.href = 'login.html';
+                    return;
+                }
+
+                // Get course ID from URL
+                const urlParams = new URLSearchParams(window.location.search);
+                const courseId = urlParams.get('id');
+                
+                if (!courseId) {
+                    alert('No course specified');
+                    window.location.href = 'courses.html';
+                    return;
+                }
+
+                // Fetch user profile
+                const profileResponse = await fetch('http://localhost:5001/api/user/profile', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (!profileResponse.ok) {
+                    throw new Error('Failed to fetch profile');
+                }
+
+                const profileData = await profileResponse.json();
+                const user = profileData.user;
+                
+                // Update profile information
+                const nameElements = document.querySelectorAll('.name');
+                nameElements.forEach(element => {
+                    element.textContent = user.name;
+                });
+
+                // Fetch course details
+                const courseResponse = await fetch(`http://localhost:5001/api/courses/${courseId}`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (!courseResponse.ok) {
+                    throw new Error('Failed to fetch course');
+                }
+
+                const course = await courseResponse.json();
+                console.log('Course details:', course);
+
+                // Update course details on the page
+                document.getElementById('courseTitle').textContent = course.title;
+                document.getElementById('courseSubject').textContent = course.subject;
+                document.getElementById('courseLevel').textContent = course.level.charAt(0).toUpperCase() + course.level.slice(1);
+                document.getElementById('courseDuration').textContent = `${course.duration} hours`;
+                document.getElementById('enrolledCount').textContent = `${course.enrolledStudents ? course.enrolledStudents.length : 0} students`;
+                document.getElementById('courseDescription').textContent = course.description;
+                document.getElementById('coursePrice').textContent = `$${course.price}`;
+
+                // Update tutor information
+                if (course.tutorId) {
+                    document.getElementById('tutorName').textContent = course.tutorId.name || 'Unknown';
+                    document.getElementById('tutorEmail').textContent = `Email: ${course.tutorId.email || 'N/A'}`;
+                    document.getElementById('tutorBio').textContent = course.tutorId.bio || 'No bio available';
+                } else if (course.tutor) {
+                    // For backward compatibility
+                    document.getElementById('tutorName').textContent = course.tutor.name || 'Unknown';
+                    document.getElementById('tutorEmail').textContent = `Email: ${course.tutor.email || 'N/A'}`;
+                    document.getElementById('tutorBio').textContent = course.tutor.bio || 'No bio available';
+                }
+
+                // Check if user is already enrolled
+                let isEnrolled = false;
+                
+                if (course.enrolledStudents) {
+                    if (Array.isArray(course.enrolledStudents)) {
+                        // Check if enrolled students contains the user ID
+                        if (course.enrolledStudents.some(student => {
+                            // Handle both simple array of IDs and array of objects with studentId
+                            return (typeof student === 'object' && student.studentId === user._id) || 
+                                   (typeof student === 'string' && student === user._id);
+                        })) {
+                            isEnrolled = true;
+                        }
+                    }
+                }
+                
+                if (isEnrolled) {
+                    // Show already enrolled message
+                    document.querySelector('.already-enrolled').style.display = 'flex';
+                    // Hide enroll button
+                    document.getElementById('enrollButton').style.display = 'none';
+                    // Show continue learning button
+                    document.getElementById('continueButton').style.display = 'flex';
+                }
+
+                // Load course materials
+                const materialsList = document.getElementById('materialsList');
+                if (course.materials && course.materials.length > 0) {
+                    course.materials.forEach((material, index) => {
+                        // Get video URL (handle both videoUrl and fileUrl)
+                        const videoUrl = material.videoUrl || material.fileUrl || material.url;
+                        
+                        // Create video item
+                        const videoItem = document.createElement('li');
+                        videoItem.className = 'material-item';
+                        videoItem.innerHTML = `
+                            <div class="material-info">
+                                <div class="material-icon"><i class="fas fa-play-circle"></i></div>
+                                <div>
+                                    <h4>${material.title}</h4>
+                                    <p>${material.description || 'No description available'}</p>
+                                </div>
+                            </div>
+                            <button class="play-btn" onclick="playVideo('${videoUrl}', '${material.title.replace(/'/g, "\\'")}')" data-video="${videoUrl}">
+                                <i class="fas fa-play"></i> Play
+                            </button>
+                        `;
+                        materialsList.appendChild(videoItem);
+                    });
+                } else {
+                    materialsList.innerHTML = '<li class="material-item"><div class="material-info">No materials available for this course yet.</div></li>';
+                }
+
+                // Handle enrollment
+                document.getElementById('enrollButton').addEventListener('click', async () => {
+                    try {
+                        const enrollResponse = await fetch(`http://localhost:5001/api/courses/${courseId}/enroll`, {
+                            method: 'POST',
+                            headers: {
+                                'Authorization': `Bearer ${token}`,
+                                'Content-Type': 'application/json'
+                            }
+                        });
+
+                        const responseData = await enrollResponse.json();
+                        
+                        if (!enrollResponse.ok) {
+                            if (responseData.msg && responseData.msg.includes('Already enrolled')) {
+                                document.querySelector('.already-enrolled').style.display = 'flex';
+                                document.getElementById('enrollButton').style.display = 'none';
+                                document.getElementById('continueButton').style.display = 'flex';
+                            } else {
+                                throw new Error(responseData.msg || 'Failed to enroll');
+                            }
+                        } else {
+                            // Show success message
+                            document.querySelector('.enrollment-success').style.display = 'flex';
+                            // Hide enroll button
+                            document.getElementById('enrollButton').style.display = 'none';
+                            // Show continue button
+                            document.getElementById('continueButton').style.display = 'flex';
+                            // Update enrolled count
+                            const currentCount = parseInt(document.getElementById('enrolledCount').textContent);
+                            document.getElementById('enrolledCount').textContent = `${currentCount + 1} students`;
+                        }
+                    } catch (error) {
+                        console.error('Enrollment error:', error);
+                        // Show error message inline instead of alert popup
+                        const errorMessage = error.message || 'Failed to enroll';
+                        
+                        // Create an error message element
+                        const errorEl = document.createElement('div');
+                        errorEl.style.background = '#ffebee';
+                        errorEl.style.color = '#c62828';
+                        errorEl.style.padding = '0.8rem';
+                        errorEl.style.borderRadius = '5px';
+                        errorEl.style.marginBottom = '1rem';
+                        errorEl.innerHTML = `<i class="fas fa-exclamation-circle"></i> ${errorMessage}`;
+                        
+                        // Insert error above the enrollment button
+                        const actionsDiv = document.querySelector('.course-actions');
+                        actionsDiv.parentNode.insertBefore(errorEl, actionsDiv);
+                    }
+                });
+
+                // Handle continue learning button
+                document.getElementById('continueButton').addEventListener('click', () => {
+                    window.location.href = `course-view.html?id=${courseId}`;
+                });
+
+                // Set up logout buttons
+                document.getElementById('logout-btn').addEventListener('click', handleLogout);
+                document.getElementById('header-logout-btn').addEventListener('click', handleLogout);
+
+            } catch (error) {
+                console.error('Error loading course:', error);
+                // Remove the alert to prevent unnecessary popups
+                document.getElementById('courseTitle').textContent = 'Could not load course details';
+                document.getElementById('courseDescription').textContent = 'There was a problem loading this course. Please try again later.';
+            }
+        });
+
+        // Video player functionality
+        function playVideo(videoUrl, title) {
+            const videoModal = document.getElementById('videoModal');
+            const videoPlayerContainer = document.getElementById('videoPlayerContainer');
+            
+            if (!videoUrl) {
+                alert('No video available for preview');
+                return;
+            }
+            
+            // Clear previous player
+            videoPlayerContainer.innerHTML = '';
+            
+            // Create new player with the enhanced video player
+            const player = window.videoPlayer.createPlayer(videoUrl, {
+                title: title || 'Video Preview',
+                autoplay: true,
+                width: '100%',
+                height: '400px',
+                showTroubleshootLink: true
+            });
+            
+            videoPlayerContainer.appendChild(player);
+            videoModal.style.display = 'flex';
+        }
+        
+        function closeVideoModal() {
+            const videoModal = document.getElementById('videoModal');
+            const videoPlayerContainer = document.getElementById('videoPlayerContainer');
+            
+            // Clear video player
+            videoPlayerContainer.innerHTML = '';
+            videoModal.style.display = 'none';
+        }
+
+        // Handle logout function
+        function handleLogout(e) {
+            e.preventDefault();
+            if (confirm('Are you sure you want to logout?')) {
+                localStorage.removeItem('token');
+                localStorage.removeItem('user');
+                window.location.href = 'login.html';
+            }
+        }
+
+        // Dark Mode Manual Toggle
+        document.getElementById('dark-mode-floating-toggle').addEventListener('click', function() {
+            // Toggle dark mode class
+            document.body.classList.toggle('dark');
+            
+            // Update button icon
+            const icon = this.querySelector('i');
+            if (document.body.classList.contains('dark')) {
+                localStorage.setItem('darkMode', 'enabled');
+                icon.classList.remove('fa-moon');
+                icon.classList.add('fa-sun');
+            } else {
+                localStorage.setItem('darkMode', 'disabled');
+                icon.classList.remove('fa-sun');
+                icon.classList.add('fa-moon');
+            }
+            
+            // Update the regular toggle button as well
+            const headerToggleBtn = document.getElementById('toggle-btn');
+            if (headerToggleBtn) {
+                if (document.body.classList.contains('dark')) {
+                    headerToggleBtn.classList.remove('fa-moon');
+                    headerToggleBtn.classList.add('fa-sun');
+                } else {
+                    headerToggleBtn.classList.remove('fa-sun');
+                    headerToggleBtn.classList.add('fa-moon');
+                }
+            }
+        });
+        
+        // Initialize button state based on current mode
+        document.addEventListener('DOMContentLoaded', function() {
+            const darkModeEnabled = document.body.classList.contains('dark') || localStorage.getItem('darkMode') === 'enabled';
+            
+            // Apply dark mode if enabled in localStorage but not yet applied
+            if (localStorage.getItem('darkMode') === 'enabled' && !document.body.classList.contains('dark')) {
+                document.body.classList.add('dark');
+            }
+            
+            const icon = document.getElementById('dark-mode-floating-toggle').querySelector('i');
+            
+            if (darkModeEnabled) {
+                icon.classList.remove('fa-moon');
+                icon.classList.add('fa-sun');
+            } else {
+                icon.classList.remove('fa-sun');
+                icon.classList.add('fa-moon');
+            }
+        });
+    </script>
+</body>
+</html> 

@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tutor Registration - Education Platform</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        /* Dark mode specific styles */
+        /* Removing the inline styles as they're now handled in the global CSS */
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="form-container">
+            <h2 style="font-size: 3rem; margin-bottom: 2rem; text-align: center; color: var(--main-color);">Become a Tutor</h2>
+            
+            <form id="tutor-register-form" method="post">
+                <h3>Tutor Registration</h3>
+                <!-- Add error message container -->
+                <div id="error-message" style="display: none;"></div>
+                <div class="form-group">
+                    <label for="name">Full Name <span>*</span></label>
+                    <input type="text" id="name" name="name" class="box" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Email <span>*</span></label>
+                    <input type="email" id="email" name="email" class="box" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Password <span>*</span></label>
+                    <input type="password" id="password" name="password" class="box" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="confirm-password">Confirm Password <span>*</span></label>
+                    <input type="password" id="confirm-password" name="confirm-password" class="box" required>
+                </div>
+
+                <!-- Hidden input for role -->
+                <input type="hidden" id="role" name="role" value="tutor">
+
+                <div class="form-group">
+                    <label for="subjects">Subjects (comma-separated) <span>*</span></label>
+                    <input type="text" id="subjects" name="subjects" class="box" placeholder="e.g., Mathematics, Physics, Chemistry" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="experience">Years of Experience <span>*</span></label>
+                    <input type="number" id="experience" name="experience" class="box" min="0" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="education">Education <span>*</span></label>
+                    <input type="text" id="education" name="education" class="box" placeholder="e.g., B.Sc. in Mathematics" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="hourly-rate">Hourly Rate ($) <span>*</span></label>
+                    <input type="number" id="hourly-rate" name="hourlyRate" class="box" min="0" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="bio">Bio <span>*</span></label>
+                    <textarea id="bio" name="bio" class="box" rows="4" required></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>Availability <span>*</span></label>
+                    <div id="availability-container">
+                        <div class="availability-entry">
+                            <select name="day" class="box" required>
+                                <option value="">Select Day</option>
+                                <option value="Monday">Monday</option>
+                                <option value="Tuesday">Tuesday</option>
+                                <option value="Wednesday">Wednesday</option>
+                                <option value="Thursday">Thursday</option>
+                                <option value="Friday">Friday</option>
+                                <option value="Saturday">Saturday</option>
+                                <option value="Sunday">Sunday</option>
+                            </select>
+                            <div style="display: flex; gap: 1rem; margin-top: 1rem;">
+                                <input type="time" name="startTime" class="box" required>
+                                <input type="time" name="endTime" class="box" required>
+                            </div>
+                            <button type="button" class="remove-availability" style="margin-top: 0.8rem;">Remove</button>
+                        </div>
+                    </div>
+                    <button type="button" id="add-availability" style="margin-top: 1rem;">Add Time Slot</button>
+                </div>
+
+                <button type="submit" class="btn" style="width: 100%; margin-top: 2rem;">Register as Tutor</button>
+            </form>
+            <p>Already have an account? <a href="login.html">Login here</a></p>
+        </div>
+    </div>
+
+    <script src="js/script.js"></script>
+    <script>
+        // Add and remove availability time slots
+        document.getElementById('add-availability').addEventListener('click', function() {
+            const container = document.getElementById('availability-container');
+            const newEntry = document.createElement('div');
+            newEntry.className = 'availability-entry';
+            newEntry.innerHTML = `
+                <select name="day" class="box" required>
+                    <option value="">Select Day</option>
+                    <option value="Monday">Monday</option>
+                    <option value="Tuesday">Tuesday</option>
+                    <option value="Wednesday">Wednesday</option>
+                    <option value="Thursday">Thursday</option>
+                    <option value="Friday">Friday</option>
+                    <option value="Saturday">Saturday</option>
+                    <option value="Sunday">Sunday</option>
+                </select>
+                <div style="display: flex; gap: 1rem; margin-top: 1rem;">
+                    <input type="time" name="startTime" class="box" required>
+                    <input type="time" name="endTime" class="box" required>
+                </div>
+                <button type="button" class="remove-availability" style="margin-top: 0.8rem;">Remove</button>
+            `;
+            container.appendChild(newEntry);
+        });
+
+        document.getElementById('availability-container').addEventListener('click', function(e) {
+            if (e.target.classList.contains('remove-availability')) {
+                if (document.querySelectorAll('.availability-entry').length > 1) {
+                    e.target.parentElement.remove();
+                } else {
+                    // Replace alert with inline notification
+                    const notification = document.createElement('div');
+                    notification.className = 'notification';
+                    notification.innerHTML = '<i class="fas fa-info-circle"></i> You must have at least one availability slot.';
+                    notification.style.backgroundColor = 'var(--light-bg)';
+                    notification.style.color = 'var(--secondary-color)';
+                    notification.style.padding = '0.8rem 1rem';
+                    notification.style.borderRadius = '0.5rem';
+                    notification.style.marginTop = '1rem';
+                    notification.style.display = 'flex';
+                    notification.style.alignItems = 'center';
+                    
+                    // Add to availability container
+                    const container = document.getElementById('availability-container');
+                    
+                    // Remove any existing notifications
+                    const existingNotification = container.querySelector('.notification');
+                    if (existingNotification) {
+                        container.removeChild(existingNotification);
+                    }
+                    
+                    container.appendChild(notification);
+                    
+                    // Auto-dismiss after 3 seconds
+                    setTimeout(() => {
+                        if (container.contains(notification)) {
+                            container.removeChild(notification);
+                        }
+                    }, 3000);
+                }
+            }
+        });
+
+        // Form submission
+        document.getElementById('tutor-register-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirm-password').value;
+            
+            // Get role from the hidden input field
+            const role = document.getElementById('role').value;
+            
+            if (password !== confirmPassword) {
+                // Replace alert with inline error message
+                errorMessage.style.display = 'block';
+                errorMessage.innerHTML = '<i class="fas fa-exclamation-circle"></i> Passwords do not match. Please try again.';
+                // Scroll to top to show error
+                window.scrollTo(0, 0);
+                return;
+            }
+            
+            // Get subjects as array
+            const subjects = document.getElementById('subjects').value
+                .split(',')
+                .map(subject => subject.trim())
+                .filter(subject => subject.length > 0);
+            
+            const experience = document.getElementById('experience').value;
+            const education = document.getElementById('education').value;
+            const hourlyRate = document.getElementById('hourly-rate').value;
+            const bio = document.getElementById('bio').value;
+            
+            // Get availability as array of objects
+            const availabilityEntries = document.querySelectorAll('.availability-entry');
+            const availability = Array.from(availabilityEntries).map(entry => {
+                const day = entry.querySelector('select[name="day"]').value;
+                const startTime = entry.querySelector('input[name="startTime"]').value;
+                const endTime = entry.querySelector('input[name="endTime"]').value;
+                return { day, startTime, endTime };
+            });
+            
+            console.log('Submitting tutor registration with role:', role);
+            
+            // Get error message container
+            const errorMessage = document.getElementById('error-message');
+            
+            try {
+                const response = await fetch('http://localhost:5001/api/auth/register', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        name,
+                        email,
+                        password,
+                        role,
+                        subjects,
+                        experience,
+                        education,
+                        hourlyRate,
+                        bio,
+                        availability
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    // Store token and user data
+                    localStorage.setItem('token', data.token);
+                    localStorage.setItem('user', JSON.stringify(data.user));
+                    
+                    // Show success message before redirect
+                    errorMessage.style.display = 'block';
+                    errorMessage.style.color = 'var(--tertiary-color)';
+                    errorMessage.style.background = 'var(--light-bg)';
+                    errorMessage.innerHTML = '<i class="fas fa-check-circle"></i> Registration successful! Redirecting...';
+                    
+                    // Redirect to tutor dashboard after a short delay
+                    setTimeout(() => {
+                        window.location.href = 'tutor-dashboard.html';
+                    }, 1500);
+                } else {
+                    errorMessage.style.display = 'block';
+                    errorMessage.innerHTML = `<i class="fas fa-exclamation-circle"></i> ${data.msg || 'Registration failed'}`;
+                    
+                    // Scroll to top to show error
+                    window.scrollTo(0, 0);
+                }
+            } catch (error) {
+                console.error('Registration error:', error);
+                errorMessage.style.display = 'block';
+                errorMessage.innerHTML = '<i class="fas fa-exclamation-circle"></i> Registration failed. Please check your internet connection and try again.';
+                
+                // Scroll to top to show error
+                window.scrollTo(0, 0);
+            }
+        });
+    </script>
+</body>
+</html> 

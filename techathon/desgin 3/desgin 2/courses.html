@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+   <meta charset="UTF-8">
+   <meta http-equiv="X-UA-Compatible" content="IE=edge">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <title>Courses - Education Platform</title>
+
+   <!-- font awesome cdn link  -->
+   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.2/css/all.min.css">
+
+   <!-- custom css file link  -->
+   <link rel="stylesheet" href="css/style.css">
+
+   <style>
+      .no-courses {
+         text-align: center;
+         padding: 3rem;
+         font-size: 1.5rem;
+         color: var(--light-color);
+         background: var(--white);
+         border-radius: 5px;
+         width: 100%;
+      }
+      
+      .course-price {
+         position: absolute;
+         top: 10px;
+         right: 10px;
+         background: var(--primary-color);
+         color: white;
+         padding: 0.5rem 1rem;
+         border-radius: 30px;
+         font-weight: bold;
+      }
+      
+      .course-level {
+         position: absolute;
+         top: 10px;
+         left: 10px;
+         background: rgba(0, 0, 0, 0.5);
+         color: white;
+         padding: 0.3rem 0.8rem;
+         border-radius: 30px;
+         font-size: 0.8rem;
+      }
+      
+      .thumb {
+         position: relative;
+      }
+      
+      .course-meta {
+         display: flex;
+         justify-content: space-between;
+         margin-bottom: 1rem;
+         font-size: 0.9rem;
+         color: var(--light-color);
+      }
+      
+      .loading-spinner {
+         display: flex;
+         justify-content: center;
+         align-items: center;
+         height: 200px;
+         width: 100%;
+      }
+      
+      .box .btn-container {
+         display: flex;
+         gap: 0.5rem;
+         margin-top: 1rem;
+      }
+      
+      .view-btn, .enroll-btn {
+         flex: 1;
+         padding: 0.8rem;
+         text-align: center;
+         border-radius: 5px;
+         cursor: pointer;
+         font-size: 0.9rem;
+         transition: all 0.3s ease;
+      }
+      
+      .view-btn {
+         background: var(--light-bg);
+         color: var(--dark-color);
+      }
+      
+      .view-btn:hover {
+         background: var(--light-color);
+         color: var(--white);
+      }
+      
+      .enroll-btn {
+         background: var(--primary-color);
+         color: var(--white);
+      }
+      
+      .enroll-btn:hover {
+         background: var(--primary-dark);
+      }
+      
+      /* Pagination styles */
+      .pagination {
+         display: flex;
+         justify-content: center;
+         margin-top: 2rem;
+         gap: 0.5rem;
+      }
+      
+      .pagination button {
+         padding: 0.5rem 1rem;
+         border: 1px solid var(--light-bg);
+         background: var(--white);
+         color: var(--dark-color);
+         border-radius: 5px;
+         cursor: pointer;
+         transition: all 0.3s ease;
+      }
+      
+      .pagination button.active {
+         background: var(--primary-color);
+         color: var(--white);
+         border-color: var(--primary-color);
+      }
+      
+      .pagination button:hover:not(.active) {
+         background: var(--light-bg);
+      }
+      
+      .pagination button:disabled {
+         cursor: not-allowed;
+         opacity: 0.5;
+      }
+      
+      /* Search bar styles */
+      .search-container {
+         margin-bottom: 2rem;
+         display: flex;
+         gap: 1rem;
+      }
+      
+      .search-input {
+         flex: 1;
+         padding: 1rem;
+         border: 1px solid var(--light-bg);
+         border-radius: 5px;
+         font-size: 1rem;
+      }
+      
+      .filter-select {
+         padding: 1rem;
+         border: 1px solid var(--light-bg);
+         border-radius: 5px;
+         font-size: 1rem;
+         min-width: 150px;
+      }
+      
+      .search-btn {
+         background: var(--primary-color);
+         color: white;
+         border: none;
+         padding: 0 1.5rem;
+         border-radius: 5px;
+         cursor: pointer;
+         transition: background 0.3s;
+      }
+      
+      .search-btn:hover {
+         background: var(--primary-dark);
+      }
+      
+      /* Already enrolled indicator */
+      .enrolled-badge {
+         position: absolute;
+         top: 45px;
+         right: 10px;
+         background: #4caf50;
+         color: white;
+         padding: 0.3rem 0.8rem;
+         border-radius: 30px;
+         font-size: 0.8rem;
+      }
+   </style>
+</head>
+<body>
+
+<header class="header">
+   
+   <section class="flex">
+
+      <div class="navbar-container">
+         <a href="home.html" class="logo">विद्या</a>
+         <nav class="navbar">
+            <a href="home.html"><i class="fas fa-home"></i><span>Home</span></a>
+            <a href="student-dashboard.html"><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></a>
+            <a href="courses.html" class="active"><i class="fas fa-graduation-cap"></i><span>All Courses</span></a>
+            <a href="my-courses.html"><i class="fas fa-book"></i><span>My Courses</span></a>
+            <a href="#"><i class="fas fa-chart-line"></i><span>My Progress</span></a>
+            <a href="#" id="sidebar-logout-btn"><i class="fas fa-sign-out-alt"></i><span>Logout</span></a>
+         </nav>
+      </div>
+
+      <form action="#" method="post" class="search-form" id="headerSearchForm">
+         <input type="text" name="search_box" id="headerSearchInput" placeholder="search courses..." maxlength="100">
+         <button type="submit" class="fas fa-search"></button>
+      </form>
+
+      <div class="icons">
+         <div id="menu-btn" class="fas fa-bars"></div>
+         <div id="search-btn" class="fas fa-search"></div>
+         <div id="user-btn" class="fas fa-user"></div>
+         <div id="toggle-btn" class="fas fa-sun"></div>
+         <div id="header-logout-btn" class="fas fa-sign-out-alt" style="cursor: pointer; margin-left: 15px;" title="Logout"></div>
+      </div>
+
+      <div class="profile">
+         <img src="images/pic-1.jpg" class="image" alt="">
+         <h3 class="name">Loading...</h3>
+         <p class="role">Student</p>
+         <a href="profile.html" class="btn">view profile</a>
+         <div class="flex-btn">
+            <a href="login.html" class="option-btn">login</a>
+            <a href="register.html" class="option-btn">register</a>
+         </div>
+      </div>
+
+   </section>
+
+</header>   
+
+<div class="side-bar">
+
+   <div id="close-btn">
+      <i class="fas fa-times"></i>
+   </div>
+
+   <div class="profile">
+      <img src="images/pic-1.jpg" class="image" alt="">
+      <h3 class="name">Loading...</h3>
+      <p class="role">Student</p>
+      <a href="profile.html" class="btn">view profile</a>
+   </div>
+
+   <nav class="navbar">
+      <a href="home.html"><i class="fas fa-home"></i><span>Home</span></a>
+      <a href="student-dashboard.html"><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></a>
+      <a href="courses.html" class="active"><i class="fas fa-graduation-cap"></i><span>All Courses</span></a>
+      <a href="my-courses.html"><i class="fas fa-book"></i><span>My Courses</span></a>
+      <a href="#"><i class="fas fa-chart-line"></i><span>My Progress</span></a>
+      <a href="#" id="sidebar-logout-btn"><i class="fas fa-sign-out-alt"></i><span>Logout</span></a>
+   </nav>
+
+</div>
+
+<section class="courses">
+
+   <h1 class="heading">All Courses</h1>
+
+   <div class="search-container">
+      <input type="text" class="search-input" id="searchInput" placeholder="Search courses...">
+      <select class="filter-select" id="subjectFilter">
+         <option value="">All Subjects</option>
+         <option value="Web Development">Web Development</option>
+         <option value="Mobile Development">Mobile Development</option>
+         <option value="UI/UX Design">UI/UX Design</option>
+         <option value="Data Science">Data Science</option>
+         <option value="Programming">Programming</option>
+         <option value="Business">Business</option>
+         <option value="Marketing">Marketing</option>
+         <option value="Other">Other</option>
+      </select>
+      <select class="filter-select" id="levelFilter">
+         <option value="">All Levels</option>
+         <option value="beginner">Beginner</option>
+         <option value="intermediate">Intermediate</option>
+         <option value="advanced">Advanced</option>
+      </select>
+      <button class="search-btn" id="searchBtn">
+         <i class="fas fa-search"></i>
+      </button>
+   </div>
+
+   <div id="courseContainer" class="box-container">
+      <div class="loading-spinner">
+         <i class="fas fa-spinner fa-spin fa-3x"></i>
+      </div>
+   </div>
+
+   <div class="pagination" id="pagination">
+      <!-- Pagination buttons will be added here -->
+   </div>
+
+</section>
+
+<footer class="footer">
+   <p>&copy; 2023 विद्या. All rights reserved.</p>
+</footer>
+
+<!-- custom js file link  -->
+<script src="js/script.js"></script>
+
+<script>
+   document.addEventListener('DOMContentLoaded', function() {
+      // Authentication check
+      const token = localStorage.getItem('token');
+      if (!token) {
+         window.location.href = 'login.html';
+         return;
+      }
+
+      // State variables
+      let allCourses = [];
+      let filteredCourses = [];
+      let currentPage = 1;
+      let coursesPerPage = 6;
+      let userEnrolledCourseIds = [];
+      let userId = null;
+
+      // Get user profile and fetch courses
+      async function initialize() {
+         try {
+            // Fetch user profile
+            const profileResponse = await fetch('http://localhost:5001/api/user/profile', {
+               headers: {
+                  'Authorization': `Bearer ${token}`
+               }
+            });
+
+            if (!profileResponse.ok) {
+               throw new Error('Failed to fetch profile');
+            }
+
+            const profileData = await profileResponse.json();
+            const user = profileData.user;
+            userId = user.id;
+            
+            // Update profile information
+            const nameElements = document.querySelectorAll('.name');
+            nameElements.forEach(element => {
+               element.textContent = user.name;
+            });
+
+            // Fetch enrolled courses for the student
+            const enrolledCoursesResponse = await fetch('http://localhost:5001/api/student/courses', {
+               headers: {
+                  'Authorization': `Bearer ${token}`
+               }
+            });
+
+            if (enrolledCoursesResponse.ok) {
+               const enrolledCoursesData = await enrolledCoursesResponse.json();
+               userEnrolledCourseIds = enrolledCoursesData.map(course => course._id);
+            }
+
+            // Fetch all courses
+            fetchCourses();
+
+         } catch (error) {
+            console.error('Initialization error:', error);
+            alert('Failed to load data: ' + error.message);
+         }
+      }
+
+      // Fetch courses from API
+      async function fetchCourses() {
+         try {
+            const response = await fetch('http://localhost:5001/api/courses', {
+               headers: {
+                  'Authorization': `Bearer ${token}`
+               }
+            });
+
+            if (!response.ok) {
+               throw new Error('Failed to fetch courses');
+            }
+
+            const data = await response.json();
+            allCourses = data;
+            
+            // Apply initial filters
+            applyFilters();
+            
+         } catch (error) {
+            console.error('Error fetching courses:', error);
+            document.getElementById('courseContainer').innerHTML = `
+               <div class="no-courses">
+                  <i class="fas fa-exclamation-circle"></i>
+                  <p>Failed to load courses. Please try again later.</p>
+               </div>
+            `;
+         }
+      }
+
+      // Apply filters and search
+      function applyFilters() {
+         const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+         const subjectFilter = document.getElementById('subjectFilter').value;
+         const levelFilter = document.getElementById('levelFilter').value;
+
+         filteredCourses = allCourses.filter(course => {
+            const matchesSearch = course.title.toLowerCase().includes(searchTerm) || 
+                                course.description.toLowerCase().includes(searchTerm);
+            const matchesSubject = !subjectFilter || course.subject === subjectFilter;
+            const matchesLevel = !levelFilter || course.level === levelFilter;
+
+            return matchesSearch && matchesSubject && matchesLevel;
+         });
+
+         // Reset to first page and display courses
+         currentPage = 1;
+         displayCourses();
+         setupPagination();
+      }
+
+      // Display courses for current page
+      function displayCourses() {
+         const courseContainer = document.getElementById('courseContainer');
+         
+         // Calculate page boundaries
+         const startIndex = (currentPage - 1) * coursesPerPage;
+         const endIndex = startIndex + coursesPerPage;
+         const coursesToShow = filteredCourses.slice(startIndex, endIndex);
+
+         if (coursesToShow.length === 0) {
+            courseContainer.innerHTML = `
+               <div class="no-courses">
+                  <i class="fas fa-search"></i>
+                  <p>No courses found. Try adjusting your search criteria.</p>
+               </div>
+            `;
+            return;
+         }
+
+         // Generate HTML for courses
+         courseContainer.innerHTML = coursesToShow.map(course => {
+            const isEnrolled = userEnrolledCourseIds.includes(course._id);
+            const materialsCount = course.materials ? course.materials.length : 0;
+            
+            return `
+               <div class="box">
+                  <div class="tutor">
+                     <img src="images/pic-2.jpg" alt="Tutor">
+                     <div class="info">
+                        <h3>${course.tutorId?.name || 'Unknown'}</h3>
+                        <span>${new Date(course.createdAt).toLocaleDateString()}</span>
+                     </div>
+                  </div>
+                  <div class="thumb">
+                     <img src="images/thumb-${Math.floor(Math.random() * 9) + 1}.png" alt="${course.title}">
+                     <span>${materialsCount} ${materialsCount === 1 ? 'video' : 'videos'}</span>
+                     <div class="course-price">$${course.price}</div>
+                     <div class="course-level">${course.level.charAt(0).toUpperCase() + course.level.slice(1)}</div>
+                     ${isEnrolled ? '<div class="enrolled-badge">Enrolled</div>' : ''}
+                  </div>
+                  <h3 class="title">${course.title}</h3>
+                  <div class="course-meta">
+                     <span><i class="fas fa-clock"></i> ${course.duration} hours</span>
+                     <span><i class="fas fa-users"></i> ${course.enrolledStudents?.length || 0} students</span>
+                  </div>
+                  <div class="btn-container">
+                     <a href="course-detail.html?id=${course._id}" class="view-btn">
+                        <i class="fas fa-eye"></i> View Details
+                     </a>
+                     ${isEnrolled ? 
+                        `<a href="course-view.html?id=${course._id}" class="enroll-btn">
+                           <i class="fas fa-play"></i> Continue
+                        </a>` : 
+                        `<a href="course-detail.html?id=${course._id}" class="enroll-btn">
+                           <i class="fas fa-user-plus"></i> Enroll
+                        </a>`
+                     }
+                  </div>
+               </div>
+            `;
+         }).join('');
+      }
+
+      // Set up pagination controls
+      function setupPagination() {
+         const paginationElement = document.getElementById('pagination');
+         const totalPages = Math.ceil(filteredCourses.length / coursesPerPage);
+         
+         // Don't show pagination if there's only one page
+         if (totalPages <= 1) {
+            paginationElement.innerHTML = '';
+            return;
+         }
+         
+         // Generate pagination buttons
+         let paginationHTML = `
+            <button id="prevPage" ${currentPage === 1 ? 'disabled' : ''}>
+               <i class="fas fa-chevron-left"></i>
+            </button>
+         `;
+         
+         // Add page numbers
+         for (let i = 1; i <= totalPages; i++) {
+            if (
+               i === 1 || // First page
+               i === totalPages || // Last page
+               (i >= currentPage - 1 && i <= currentPage + 1) // Pages around current page
+            ) {
+               paginationHTML += `
+                  <button class="page-number ${i === currentPage ? 'active' : ''}" data-page="${i}">
+                     ${i}
+                  </button>
+               `;
+            } else if (
+               i === currentPage - 2 || 
+               i === currentPage + 2
+            ) {
+               paginationHTML += `<button class="page-ellipsis">...</button>`;
+            }
+         }
+         
+         paginationHTML += `
+            <button id="nextPage" ${currentPage === totalPages ? 'disabled' : ''}>
+               <i class="fas fa-chevron-right"></i>
+            </button>
+         `;
+         
+         paginationElement.innerHTML = paginationHTML;
+         
+         // Add event listeners for pagination buttons
+         document.querySelectorAll('.page-number').forEach(button => {
+            button.addEventListener('click', function() {
+               currentPage = parseInt(this.dataset.page);
+               displayCourses();
+               setupPagination();
+            });
+         });
+         
+         // Previous page button
+         const prevPageBtn = document.getElementById('prevPage');
+         if (prevPageBtn) {
+            prevPageBtn.addEventListener('click', function() {
+               if (currentPage > 1) {
+                  currentPage--;
+                  displayCourses();
+                  setupPagination();
+               }
+            });
+         }
+         
+         // Next page button
+         const nextPageBtn = document.getElementById('nextPage');
+         if (nextPageBtn) {
+            nextPageBtn.addEventListener('click', function() {
+               if (currentPage < totalPages) {
+                  currentPage++;
+                  displayCourses();
+                  setupPagination();
+               }
+            });
+         }
+      }
+
+      // Event listeners for search and filters
+      document.getElementById('searchBtn').addEventListener('click', function() {
+         applyFilters();
+      });
+      
+      document.getElementById('searchInput').addEventListener('keyup', function(event) {
+         if (event.key === 'Enter') {
+            applyFilters();
+         }
+      });
+      
+      document.getElementById('subjectFilter').addEventListener('change', function() {
+         applyFilters();
+      });
+      
+      document.getElementById('levelFilter').addEventListener('change', function() {
+         applyFilters();
+      });
+      
+      // Header search form
+      document.getElementById('headerSearchForm').addEventListener('submit', function(e) {
+         e.preventDefault();
+         const searchValue = document.getElementById('headerSearchInput').value;
+         document.getElementById('searchInput').value = searchValue;
+         applyFilters();
+      });
+
+      // Logout functionality
+      function handleLogout() {
+         if (confirm('Are you sure you want to logout?')) {
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            window.location.href = 'login.html';
+         }
+      }
+
+      document.getElementById('header-logout-btn').addEventListener('click', handleLogout);
+      document.getElementById('sidebar-logout-btn').addEventListener('click', handleLogout);
+
+      // Initialize the page
+      initialize();
+   });
+</script>
+   
+</body>
+</html>
